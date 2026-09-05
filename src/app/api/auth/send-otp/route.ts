@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          error: "Impossible d'envoyer le code WhatsApp. Vérifiez votre numéro et réessayez.",
+          error: result.error || "Impossible d'envoyer le code WhatsApp. Vérifiez votre numéro et réessayez.",
         },
         { status: 502 }
       )
@@ -69,8 +69,11 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: 'Code de connexion envoyé par WhatsApp',
+      message: result.provider === 'dev-console'
+        ? `[Mode Test] Code simulé : ${result.devCode}`
+        : 'Code de connexion envoyé par WhatsApp',
       phone,
+      ...(result.devCode ? { devCode: result.devCode } : {}),
     })
   } catch (error) {
     if (error instanceof z.ZodError) {

@@ -18,7 +18,7 @@ import {
 
 export default function Navbar() {
   const pathname = usePathname()
-  const { user, isAuthenticated, logout } = useAuth()
+  const { user, isAuthenticated, logout, setShowLoginModal } = useAuth()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false)
 
@@ -162,12 +162,12 @@ export default function Navbar() {
                 )}
               </div>
             ) : (
-              <Link
-                href="/connexion"
+              <button
+                onClick={() => setShowLoginModal(true)}
                 className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition"
               >
                 <span>Connexion WhatsApp</span>
-              </Link>
+              </button>
             )}
           </div>
 
@@ -235,13 +235,15 @@ export default function Navbar() {
               </button>
             </>
           ) : (
-            <Link
-              href="/connexion"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block w-full text-center px-4 py-2.5 bg-emerald-700 text-white rounded-lg font-semibold"
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false)
+                setShowLoginModal(true)
+              }}
+              className="block w-full text-center px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg font-semibold transition"
             >
               Connexion WhatsApp
-            </Link>
+            </button>
           )}
         </div>
       )}

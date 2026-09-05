@@ -3,15 +3,15 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/context/AuthContext'
-import { useToast } from '@/components/Toast'
-import { Sprout, Phone, KeyRound, ArrowLeft, RefreshCw, MessageSquare, Check, User as UserIcon, Shield } from 'lucide-react'
+import { useToast } from './Toast'
+import { Phone, KeyRound, User as UserIcon, X, ArrowLeft, RefreshCw, MessageSquare, Check } from 'lucide-react'
 
 const OTP_LENGTH = 6
 const RESEND_COOLDOWN = 60
 
-export default function ConnexionPage() {
+export default function LoginModal() {
   const router = useRouter()
-  const { sendOtp, login, updateProfile, isAuthenticated } = useAuth()
+  const { showLoginModal, setShowLoginModal, sendOtp, login, updateProfile } = useAuth()
   const { showToast } = useToast()
 
   const [step, setStep] = useState<'phone' | 'otp' | 'nom'>('phone')
@@ -23,12 +23,16 @@ export default function ConnexionPage() {
 
   const otpRefs = useRef<(HTMLInputElement | null)[]>([])
 
-  // If already authenticated, redirect
+  // Reset state when modal closes
   useEffect(() => {
-    if (isAuthenticated && step !== 'nom') {
-      router.push('/offres')
+    if (!showLoginModal) {
+      setStep('phone')
+      setPhone('')
+      setOtp(Array(OTP_LENGTH).fill(''))
+      setFullName('')
+      setResendTimer(0)
     }
-  }, [isAuthenticated, step, router])
+  }, [showLoginModal])
 
   // Countdown timer for OTP resend
   useEffect(() => {
@@ -37,12 +41,14 @@ export default function ConnexionPage() {
     return () => clearTimeout(timer)
   }, [resendTimer])
 
-  // Auto focus first OTP input when entering OTP step
+  // Auto focus first OTP input
   useEffect(() => {
     if (step === 'otp') {
       setTimeout(() => otpRefs.current[0]?.focus(), 100)
     }
   }, [step])
+
+  if (!showLoginModal) return null
 
   const formatPhoneInput = (value: string) => {
     const digits = value.replace(/\D/g, '')
@@ -52,8 +58,7 @@ export default function ConnexionPage() {
     return '+' + digits.slice(0, 12)
   }
 
-  const handleSendOtp = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault()
+  const handleSendOtp = async () => {
     const formatted = formatPhoneInput(phone)
     if (formatted.length < 12) {
       showToast('Entrez un numéro sénégalais valide (+221 7X XXX XX XX)', 'error')
@@ -135,8 +140,7 @@ export default function ConnexionPage() {
     }
   }
 
-  const handleVerify = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault()
+  const handleVerify = async () => {
     const code = otp.join('')
     if (code.length !== OTP_LENGTH) {
       showToast(`Entrez le code à ${OTP_LENGTH} chiffres`, 'error')
@@ -157,8 +161,8 @@ export default function ConnexionPage() {
         return
       }
 
+      setShowLoginModal(false)
       showToast(`Bonjour ${currentName} !`)
-      router.push('/offres')
     } catch {
       showToast('Erreur réseau lors de la vérification', 'error')
     } finally {
@@ -166,8 +170,7 @@ export default function ConnexionPage() {
     }
   }
 
-  const handleSaveName = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault()
+  const handleSaveName = async () => {
     const nom = fullName.trim()
     if (nom.length < 2) {
       showToast('Entrez votre nom ou exploitation pour continuer', 'error')
@@ -177,8 +180,8 @@ export default function ConnexionPage() {
     setLoading(true)
     try {
       await updateProfile({ fullName: nom, full_name: nom })
+      setShowLoginModal(false)
       showToast(`Bienvenue ${nom} !`)
-      router.push('/offres')
     } catch {
       showToast("Impossible d'enregistrer votre nom. Réessayez.", 'error')
     } finally {
@@ -187,50 +190,56 @@ export default function ConnexionPage() {
   }
 
   return (
-    <div className="min-h-[82vh] flex items-center justify-center px-4 py-12">
-      <div className="max-w-md w-full bg-white rounded-3xl border border-emerald-100 shadow-2xl p-7 sm:p-9 text-center relative space-y-6">
+    <div
+      className="fixed inset-0 z-[200] bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 transition-all"
+      onClick={() => setShowLoginModal(false)}
+    >
+      <div
+        className="bg-white rounded-3xl p-7 sm:p-9 max-w-[420px] w-full text-center shadow-2xl relative border border-emerald-100 max-h-[92vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Close Button */}
+        <button
+          onClick={() => setShowLoginModal(false)}
+          className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 p-2 rounded-full hover:bg-slate-100 transition"
+          aria-label="Fermer"
+        >
+          <X className="w-5 h-5" />
+        </button>
+
         {/* STEP 1: PHONE */}
-        {step === 'phone' && (
-          <form onSubmit={handleSendOtp} className="space-y-6">
-            <div className="space-y-2">
-              <div className="w-16 h-16 bg-emerald-700 text-white rounded-2xl flex items-center justify-center mx-auto shadow-md">
-                <Sprout className="w-8 h-8" />
-              </div>
-              <h1 className="text-2xl font-black text-slate-900">
-                Connexion WhatsApp
-              </h1>
-              <p className="text-xs sm:text-sm text-slate-500 max-w-sm mx-auto leading-relaxed">
-                Entrez votre numéro sénégalais pour recevoir un code d'authentification par WhatsApp.
-              </p>
+        {step === 'phone' ? (
+          <>
+            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center shadow-sm">
+              <Phone className="w-8 h-8" />
             </div>
 
-            <div className="space-y-2 text-left">
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-                Numéro WhatsApp
-              </label>
-              <div className="relative flex items-center">
-                <div className="absolute left-3.5 flex items-center pointer-events-none text-emerald-600">
-                  <Phone className="w-4 h-4" />
-                </div>
+            <h2 className="text-2xl font-black text-slate-900 mb-1">Connexion WhatsApp</h2>
+            <p className="text-slate-500 text-xs sm:text-sm mb-6 leading-relaxed">
+              Entrez votre numéro sénégalais pour recevoir un code d'authentification par WhatsApp.
+            </p>
+
+            <div className="space-y-3 mb-5">
+              <div className="relative">
                 <input
                   type="tel"
-                  required
-                  placeholder="+221 7X XXX XX XX"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3.5 bg-slate-50 border-2 border-slate-200 rounded-xl text-center text-lg font-bold text-slate-900 focus:outline-none focus:border-emerald-600 focus:bg-white transition"
+                  placeholder="+221 7X XXX XX XX"
+                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-3.5 px-4 text-slate-900 text-center text-lg font-bold outline-none focus:border-emerald-600 focus:bg-white transition"
+                  onKeyDown={(e) => e.key === 'Enter' && handleSendOtp()}
                   autoFocus
                 />
               </div>
-              <p className="text-[11px] text-slate-400 text-center">
-                Orange (77, 78), Free (76), Expresso (70), Promobile (75)
+              <p className="text-[11px] text-slate-400">
+                Format sénégalais : Orange (77, 78), Free (76), Expresso (70), Promobile (75)
               </p>
             </div>
 
             <button
-              type="submit"
+              onClick={handleSendOtp}
               disabled={loading}
-              className="w-full py-3.5 bg-emerald-700 hover:bg-emerald-800 disabled:opacity-60 text-white font-bold rounded-xl text-sm shadow-md transition flex items-center justify-center gap-2"
+              className="w-full bg-emerald-700 hover:bg-emerald-800 disabled:opacity-60 text-white py-3.5 rounded-xl font-bold text-sm shadow-md transition flex items-center justify-center gap-2 mb-2.5"
             >
               {loading ? (
                 <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -241,36 +250,37 @@ export default function ConnexionPage() {
                 </>
               )}
             </button>
-          </form>
-        )}
+
+            <button
+              onClick={() => setShowLoginModal(false)}
+              className="w-full py-2.5 text-xs text-slate-400 hover:text-slate-600 font-medium transition"
+            >
+              Annuler
+            </button>
+          </>
+        ) : null}
 
         {/* STEP 2: OTP */}
-        {step === 'otp' && (
-          <form onSubmit={handleVerify} className="space-y-6">
-            <div className="space-y-2">
-              <div className="w-16 h-16 bg-emerald-100 text-emerald-800 rounded-2xl flex items-center justify-center mx-auto shadow-sm">
-                <KeyRound className="w-8 h-8" />
-              </div>
-              <h1 className="text-2xl font-black text-slate-900">
-                Code de vérification
-              </h1>
-              <p className="text-xs sm:text-sm text-slate-500">
-                Entrez le code envoyé au <strong className="text-slate-900">{phone}</strong>
-              </p>
-
-              <div>
-                <button
-                  type="button"
-                  onClick={handleBackToPhone}
-                  className="text-emerald-700 hover:text-emerald-800 text-xs font-bold hover:underline inline-flex items-center gap-1"
-                >
-                  <ArrowLeft className="w-3 h-3" />
-                  <span>Modifier le numéro</span>
-                </button>
-              </div>
+        {step === 'otp' ? (
+          <>
+            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center shadow-sm">
+              <KeyRound className="w-8 h-8" />
             </div>
 
-            {/* 6 Individual OTP Inputs */}
+            <h2 className="text-2xl font-black text-slate-900 mb-1">Code de vérification</h2>
+            <p className="text-slate-500 text-xs sm:text-sm mb-1">
+              Entrez le code envoyé au <strong className="text-slate-900">{phone}</strong>
+            </p>
+
+            <button
+              onClick={handleBackToPhone}
+              className="text-emerald-700 hover:text-emerald-800 text-xs font-bold hover:underline mb-5 inline-flex items-center gap-1"
+            >
+              <ArrowLeft className="w-3 h-3" />
+              <span>Modifier le numéro</span>
+            </button>
+
+            {/* 6 Digit Inputs */}
             <div className="flex gap-2 justify-center my-4" onPaste={handleOtpPaste}>
               {otp.map((digit, i) => (
                 <input
@@ -289,14 +299,14 @@ export default function ConnexionPage() {
               ))}
             </div>
 
-            <p className="text-slate-400 text-[11px]">
+            <p className="text-slate-400 text-[11px] mb-5">
               Code valable pendant 10 minutes
             </p>
 
             <button
-              type="submit"
+              onClick={handleVerify}
               disabled={loading || otp.join('').length < OTP_LENGTH}
-              className="w-full py-3.5 bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white font-bold rounded-xl text-sm shadow-md transition flex items-center justify-center gap-2"
+              className="w-full bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white py-3.5 rounded-xl font-bold text-sm shadow-md transition flex items-center justify-center gap-2 mb-2.5"
             >
               {loading ? (
                 <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -308,8 +318,8 @@ export default function ConnexionPage() {
               )}
             </button>
 
+            {/* Resend button with cooldown */}
             <button
-              type="button"
               onClick={handleResendOtp}
               disabled={resendTimer > 0 || loading}
               className={`w-full border border-slate-200 py-2.5 rounded-xl font-bold text-xs transition flex items-center justify-center gap-1.5 ${
@@ -323,41 +333,45 @@ export default function ConnexionPage() {
                 {resendTimer > 0 ? `Renvoyer le code (${resendTimer}s)` : 'Renvoyer le code par WhatsApp'}
               </span>
             </button>
-          </form>
-        )}
+
+            <button
+              onClick={() => setShowLoginModal(false)}
+              className="w-full py-2 text-xs text-slate-400 hover:text-slate-600 font-medium transition mt-1"
+            >
+              Annuler
+            </button>
+          </>
+        ) : null}
 
         {/* STEP 3: NAME ONBOARDING */}
-        {step === 'nom' && (
-          <form onSubmit={handleSaveName} className="space-y-6">
-            <div className="space-y-2">
-              <div className="w-16 h-16 bg-emerald-100 text-emerald-800 rounded-2xl flex items-center justify-center mx-auto shadow-sm">
-                <UserIcon className="w-8 h-8" />
-              </div>
-              <h1 className="text-2xl font-black text-slate-900">
-                Sous quel nom vous connaît-on ?
-              </h1>
-              <p className="text-xs sm:text-sm text-slate-500 max-w-sm mx-auto leading-relaxed">
-                Ce nom apparaîtra sur vos offres de troc agricole et discussions. Votre prénom ou le nom de votre exploitation.
-              </p>
+        {step === 'nom' ? (
+          <>
+            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center shadow-sm">
+              <UserIcon className="w-8 h-8" />
             </div>
 
-            <div>
+            <h2 className="text-2xl font-black text-slate-900 mb-1">Sous quel nom vous connaît-on ?</h2>
+            <p className="text-slate-500 text-xs sm:text-sm mb-6 leading-relaxed">
+              Ce nom apparaîtra sur vos offres de troc agricole et discussions. Votre prénom ou le nom de votre exploitation.
+            </p>
+
+            <div className="mb-5">
               <input
                 type="text"
-                required
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="ex: Amadou Diallo ou GIE Terroir Bio"
                 maxLength={60}
                 autoFocus
                 className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-3.5 px-4 text-slate-900 text-center text-base font-bold outline-none focus:border-emerald-600 focus:bg-white transition"
+                onKeyDown={(e) => e.key === 'Enter' && handleSaveName()}
               />
             </div>
 
             <button
-              type="submit"
+              onClick={handleSaveName}
               disabled={loading || fullName.trim().length < 2}
-              className="w-full py-3.5 bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white font-bold rounded-xl text-sm shadow-md transition flex items-center justify-center gap-2"
+              className="w-full bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white py-3.5 rounded-xl font-bold text-sm shadow-md transition flex items-center justify-center gap-2"
             >
               {loading ? (
                 <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -365,14 +379,8 @@ export default function ConnexionPage() {
                 <span>Continuer et démarrer</span>
               )}
             </button>
-          </form>
-        )}
-
-        {/* Security badge */}
-        <div className="pt-4 border-t border-slate-100 flex items-center justify-center gap-2 text-xs text-slate-400">
-          <Shield className="w-4 h-4 text-emerald-600" />
-          <span>Sécurisé sans mot de passe via WhatsApp</span>
-        </div>
+          </>
+        ) : null}
       </div>
     </div>
   )

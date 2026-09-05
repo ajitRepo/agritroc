@@ -1,8 +1,10 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { AuthProvider } from '@/context/AuthContext'
+import { ToastProvider } from '@/components/Toast'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import LoginModal from '@/components/LoginModal'
 
 export const metadata: Metadata = {
   title: 'AgriTroc — Plateforme de Troc & Entraide Agricole au Sénégal',
@@ -18,9 +20,12 @@ export default function RootLayout({
     <html lang="fr" className="h-full antialiased">
       <body className="min-h-full flex flex-col bg-[#f8faf5] text-slate-900">
         <AuthProvider>
-          <Navbar />
-          <main className="flex-1">{children}</main>
-          <Footer />
+          <ToastProvider>
+            <Navbar />
+            <main className="flex-1">{children}</main>
+            <Footer />
+            <LoginModal />
+          </ToastProvider>
         </AuthProvider>
       </body>
     </html>
