@@ -4,13 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "node scripts/prepare-db.js && next dev",
-    "build": "node scripts/prepare-db.js && prisma generate && next build",
+    "build": "node scripts/prepare-db.js && prisma db push && prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
     "db:generate": "node scripts/prepare-db.js && prisma generate",
     "db:push": "node scripts/prepare-db.js && prisma db push",
     "db:seed": "node scripts/prepare-db.js && tsx prisma/seed.ts",
-    "db:studio": "node scripts/prepare-db.js && prisma studio"
+    "db:studio": "node scripts/prepare-db.js && prisma studio",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
