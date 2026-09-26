@@ -1,6 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
-import { Sprout, PhoneCall, HeartHandshake, ShieldCheck } from 'lucide-react'
+import Image from 'next/image'
+import { PhoneCall, HeartHandshake, ShieldCheck } from 'lucide-react'
 
 export default function Footer() {
   return (
@@ -10,9 +11,13 @@ export default function Footer() {
           {/* Brand Col */}
           <div className="space-y-4 md:col-span-1">
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-emerald-600 flex items-center justify-center text-white">
-                <Sprout className="w-5 h-5" />
-              </div>
+              <Image
+                src="/logo-icon.png"
+                alt="AgriTroc"
+                width={36}
+                height={36}
+                className="rounded-xl"
+              />
               <span className="text-xl font-black text-white">
                 Agri<span className="text-amber-500">Troc</span>
               </span>

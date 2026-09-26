@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '@/context/AuthContext'
-import { Sprout, ArrowRight, AlertCircle, ArrowLeft } from 'lucide-react'
+import { ArrowRight, AlertCircle, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { RESOURCE_TYPES, COMPLEMENT_TYPES, SENEGAL_REGIONS } from '@/lib/constants'
 

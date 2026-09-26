@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/context/AuthContext'
 import {
-  Sprout,
   PlusCircle,
   MapPin,
   Image as ImageIcon,
@@ -121,7 +120,7 @@ export default function PublierPage() {
       {/* Title */}
       <div className="space-y-2">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold">
-          <Sprout className="w-3.5 h-3.5" />
+          <span className="text-sm">🌱</span>
           <span>Nouvelle proposition de troc</span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-black text-slate-900">

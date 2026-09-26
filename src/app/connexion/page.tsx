@@ -4,7 +4,8 @@ import React, { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/context/AuthContext'
 import { useToast } from '@/components/Toast'
-import { Sprout, Phone, KeyRound, ArrowLeft, RefreshCw, MessageSquare, Check, User as UserIcon, Shield } from 'lucide-react'
+import Image from 'next/image'
+import { Phone, KeyRound, ArrowLeft, RefreshCw, MessageSquare, Check, User as UserIcon, Shield } from 'lucide-react'
 
 const OTP_LENGTH = 6
 const RESEND_COOLDOWN = 60
@@ -193,8 +194,8 @@ export default function ConnexionPage() {
         {step === 'phone' && (
           <form onSubmit={handleSendOtp} className="space-y-6">
             <div className="space-y-2">
-              <div className="w-16 h-16 bg-emerald-700 text-white rounded-2xl flex items-center justify-center mx-auto shadow-md">
-                <Sprout className="w-8 h-8" />
+              <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto shadow-md overflow-hidden">
+                <Image src="/logo-icon.png" alt="AgriTroc" width={64} height={64} />
               </div>
               <h1 className="text-2xl font-black text-slate-900">
                 Connexion WhatsApp

@@ -4,8 +4,8 @@ import React, { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useAuth } from '@/context/AuthContext'
+import Image from 'next/image'
 import {
-  Sprout,
   PlusCircle,
   MessageSquare,
   User as UserIcon,
@@ -30,9 +30,13 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-10 h-10 rounded-xl bg-emerald-700 flex items-center justify-center text-white shadow-sm group-hover:bg-emerald-800 transition">
-              <Sprout className="w-6 h-6" />
-            </div>
+            <Image
+              src="/logo-icon.png"
+              alt="AgriTroc"
+              width={40}
+              height={40}
+              className="rounded-xl shadow-sm"
+            />
             <div>
               <span className="text-xl font-black tracking-tight text-emerald-900">
                 Agri<span className="text-amber-600">Troc</span>

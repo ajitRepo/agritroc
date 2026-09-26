@@ -9,6 +9,22 @@ import LoginModal from '@/components/LoginModal'
 export const metadata: Metadata = {
   title: 'AgriTroc — Plateforme de Troc & Entraide Agricole au Sénégal',
   description: 'Échangez vos ressources agricoles (semences, terres, bétail, machines, récoltes) en direct au Sénégal par troc simple ou avec complément via WhatsApp.',
+  icons: {
+    icon: '/icon.png',
+    apple: '/apple-icon.png',
+  },
+  openGraph: {
+    title: 'AgriTroc — Plateforme de Troc & Entraide Agricole au Sénégal',
+    description: 'Échangez vos ressources agricoles en direct au Sénégal par troc simple ou avec complément via WhatsApp.',
+    type: 'website',
+    locale: 'fr_SN',
+    siteName: 'AgriTroc',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'AgriTroc — Troc Agricole au Sénégal',
+    description: 'Échangez vos ressources agricoles en direct au Sénégal.',
+  },
 }
 
 export default function RootLayout({
