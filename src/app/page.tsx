@@ -2,18 +2,42 @@
 
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import {
   ArrowRight,
   Search,
   MapPin,
   ShieldCheck,
   RefreshCw,
-  PhoneCall,
   Sparkles,
   Layers,
   ArrowLeftRight,
+  CheckCircle2,
+  TrendingUp,
+  Users,
+  Shield,
+  Clock,
 } from 'lucide-react'
 import { RESOURCE_TYPES, SENEGAL_REGIONS } from '@/lib/constants'
+
+// Associating each category with its corresponding 3D modern icon asset
+const CATEGORY_ICONS: Record<string, string> = {
+  seeds: '/avatars/avatar-seedling.webp',
+  production: '/avatars/avatar-wheat.webp',
+  livestock: '/avatars/avatar-cow.webp',
+  machinery: '/avatars/avatar-tractor.webp',
+  land: '/avatars/avatar-sprout.webp',
+  other: '/avatars/avatar-peanut.webp',
+}
+
+const POPULAR_SEARCHES = [
+  'Semences d\'arachide',
+  'Tracteur agricole',
+  'Tourteau de maïs',
+  'Génisses & zébus',
+  'Mangues Kent',
+  'Motopompe diesel',
+]
 
 export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -38,62 +62,72 @@ export default function HomePage() {
     loadRecentOffers()
   }, [])
 
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    const params = new URLSearchParams()
+    if (searchQuery) params.set('q', searchQuery)
+    if (selectedRegion) params.set('location', selectedRegion)
+    window.location.href = `/offres?${params.toString()}`
+  }
+
   return (
-    <div className="space-y-16 pb-16">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-emerald-900 via-emerald-800 to-emerald-950 text-white pt-16 pb-24 px-4 sm:px-6 lg:px-8">
-        {/* Decorative background glow */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full pointer-events-none opacity-20">
-          <div className="absolute -top-24 left-1/4 w-96 h-96 bg-emerald-400 rounded-full blur-3xl"></div>
-          <div className="absolute top-1/2 right-1/4 w-96 h-96 bg-amber-400 rounded-full blur-3xl"></div>
+    <div className="space-y-20 pb-20">
+      {/* Hero Section with BigTech Ambient Glow & Grid Pattern */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#022c22] via-[#04402a] to-[#011d16] text-white pt-20 pb-28 px-4 sm:px-6 lg:px-8 bg-grid-dark">
+        {/* Ambient luminous glow orbs */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full pointer-events-none overflow-hidden">
+          <div className="absolute -top-32 left-1/4 w-[32rem] h-[32rem] bg-emerald-500/20 rounded-full blur-[120px] animate-glow pointer-events-none"></div>
+          <div className="absolute top-1/3 right-1/4 w-[28rem] h-[28rem] bg-amber-500/15 rounded-full blur-[100px] pointer-events-none"></div>
         </div>
 
-        <div className="relative max-w-5xl mx-auto text-center space-y-6">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-700/60 border border-emerald-500/30 text-emerald-200 text-xs sm:text-sm font-medium">
-            <Sparkles className="w-4 h-4 text-amber-400" />
-            <span>La 1ère plateforme de troc agricole au Sénégal</span>
+        <div className="relative max-w-5xl mx-auto text-center space-y-8">
+          {/* Live Platform Badge */}
+          <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-emerald-950/70 border border-emerald-400/30 text-emerald-200 text-xs sm:text-sm font-semibold backdrop-blur-md shadow-sm">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+            </span>
+            <span>Bourse d'échange agricole en direct au Sénégal</span>
+            <span className="hidden sm:inline text-emerald-400/50">•</span>
+            <span className="hidden sm:inline text-amber-400 font-bold">100% sans commission</span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
+          {/* Main Headline */}
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[1.1] text-balance">
             Échangez vos ressources agricoles <br className="hidden sm:inline" />
-            <span className="text-amber-400 underline decoration-emerald-500/50 underline-offset-8">
-              directement et sans intermédiaire
+            <span className="bg-gradient-to-r from-amber-300 via-amber-400 to-emerald-300 bg-clip-text text-transparent">
+              en direct, sans argent liquide
             </span>
           </h1>
 
-          <p className="max-w-2xl mx-auto text-base sm:text-lg text-emerald-100/90 leading-relaxed">
-            Semences, bétail, parcelles irriguées, machines agricoles ou surplus de récoltes : trouvez ce dont votre exploitation a besoin grâce au troc solidaire.
+          {/* Subtitle */}
+          <p className="max-w-2xl mx-auto text-base sm:text-xl text-emerald-100/80 leading-relaxed font-normal">
+            Semences certifiées, machines, bétail, fertilisants ou surplus de récoltes. Troquez directement d'agriculteur à agriculteur dans tout le Sénégal.
           </p>
 
-          {/* Search Box */}
+          {/* Search Command Bar */}
           <div className="pt-4 max-w-4xl mx-auto">
             <form
-              onSubmit={(e) => {
-                e.preventDefault()
-                const params = new URLSearchParams()
-                if (searchQuery) params.set('q', searchQuery)
-                if (selectedRegion) params.set('location', selectedRegion)
-                window.location.href = `/offres?${params.toString()}`
-              }}
-              className="bg-white p-2 sm:p-3 rounded-2xl shadow-xl flex flex-col sm:flex-row gap-2.5 text-slate-800"
+              onSubmit={handleSearchSubmit}
+              className="bg-white/95 backdrop-blur-xl p-2.5 sm:p-3 rounded-2xl sm:rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/20 flex flex-col sm:flex-row gap-2.5 text-slate-800"
             >
-              <div className="flex-1 flex items-center gap-2.5 px-3 py-2 bg-slate-50 rounded-xl border border-slate-200">
+              <div className="flex-1 flex items-center gap-3 px-4 py-3 bg-slate-50/80 rounded-xl sm:rounded-2xl border border-slate-200/80 hover:border-emerald-500 transition">
                 <Search className="w-5 h-5 text-emerald-600 shrink-0" />
                 <input
                   type="text"
-                  placeholder="Que cherchez-vous ? (ex: semences maïs, tracteur, foin...)"
+                  placeholder="Que cherchez-vous ? (ex: semences maïs, tracteur, tourteaux...)"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-transparent border-none outline-none text-sm placeholder:text-slate-400"
+                  className="w-full bg-transparent border-none outline-none text-sm sm:text-base placeholder:text-slate-400 font-medium"
                 />
               </div>
 
-              <div className="sm:w-56 flex items-center gap-2 px-3 py-2 bg-slate-50 rounded-xl border border-slate-200">
+              <div className="sm:w-60 flex items-center gap-2.5 px-4 py-3 bg-slate-50/80 rounded-xl sm:rounded-2xl border border-slate-200/80 hover:border-emerald-500 transition">
                 <MapPin className="w-5 h-5 text-emerald-600 shrink-0" />
                 <select
                   value={selectedRegion}
                   onChange={(e) => setSelectedRegion(e.target.value)}
-                  className="w-full bg-transparent border-none outline-none text-sm text-slate-700"
+                  className="w-full bg-transparent border-none outline-none text-sm sm:text-base text-slate-700 font-medium cursor-pointer"
                 >
                   <option value="">Toutes les régions</option>
                   {SENEGAL_REGIONS.map((r) => (
@@ -106,52 +140,105 @@ export default function HomePage() {
 
               <button
                 type="submit"
-                className="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold px-6 py-3 rounded-xl text-sm flex items-center justify-center gap-2 shadow transition"
+                className="bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-bold px-7 py-3.5 rounded-xl sm:rounded-2xl text-sm sm:text-base flex items-center justify-center gap-2.5 shadow-[0_4px_14px_rgba(5,96,58,0.3)] transition-all transform hover:-translate-y-0.5 active:translate-y-0 shrink-0"
               >
                 <span>Rechercher</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </form>
+
+            {/* Popular Search Chips */}
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-xs text-emerald-200/90">
+              <span className="font-semibold text-emerald-300">Recherches fréquentes :</span>
+              {POPULAR_SEARCHES.map((query) => (
+                <button
+                  key={query}
+                  type="button"
+                  onClick={() => {
+                    setSearchQuery(query)
+                    window.location.href = `/offres?q=${encodeURIComponent(query)}`
+                  }}
+                  className="px-2.5 py-1 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 transition-colors backdrop-blur text-emerald-100"
+                >
+                  {query}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Social Proof / Live Metrics */}
+          <div className="pt-8 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto border-t border-emerald-800/40 text-left">
+            <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur">
+              <p className="text-2xl sm:text-3xl font-black text-amber-400">0 FCFA</p>
+              <p className="text-xs text-emerald-200/80 mt-0.5">Aucune commission sur vos trocs</p>
+            </div>
+            <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur">
+              <p className="text-2xl sm:text-3xl font-black text-white">14</p>
+              <p className="text-xs text-emerald-200/80 mt-0.5">Régions du Sénégal couvertes</p>
+            </div>
+            <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur">
+              <p className="text-2xl sm:text-3xl font-black text-emerald-400">100%</p>
+              <p className="text-xs text-emerald-200/80 mt-0.5">Négociation directe sur AgriTroc</p>
+            </div>
+            <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur">
+              <p className="text-2xl sm:text-3xl font-black text-amber-400">⚡ Direct</p>
+              <p className="text-xs text-emerald-200/80 mt-0.5">Entre producteurs & coopératives</p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Category Pills */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 sm:-mt-12 relative z-10">
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-          {RESOURCE_TYPES.map((cat) => (
-            <Link
-              key={cat.value}
-              href={`/offres?resource_type=${cat.value}`}
-              className="bg-white hover:bg-emerald-50/80 p-4 rounded-2xl border border-emerald-100 shadow-sm hover:shadow-md transition text-center group flex flex-col items-center justify-center gap-2"
-            >
-              <span className="text-3xl sm:text-4xl group-hover:scale-110 transition duration-200">
-                {cat.icon}
-              </span>
-              <span className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-emerald-800">
-                {cat.label}
-              </span>
-            </Link>
-          ))}
+      {/* Modern 3D Categories Showcase */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 sm:-mt-20 relative z-10">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5 sm:gap-4">
+          {RESOURCE_TYPES.map((cat) => {
+            const iconUrl = CATEGORY_ICONS[cat.value] || '/avatars/avatar-sprout.webp'
+            return (
+              <Link
+                key={cat.value}
+                href={`/offres?resource_type=${cat.value}`}
+                className="bg-white/95 hover:bg-emerald-50/90 p-4 rounded-3xl border border-emerald-900/[0.08] shadow-[0_4px_20px_-2px_rgba(0,0,0,0.05)] hover:shadow-xl transition-all duration-300 text-center group flex flex-col items-center justify-center gap-2.5 transform hover:-translate-y-1"
+              >
+                <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden p-1 bg-gradient-to-b from-emerald-100 to-amber-50 group-hover:scale-110 transition duration-300 shadow-inner">
+                  <Image
+                    src={iconUrl}
+                    alt={cat.label}
+                    width={64}
+                    height={64}
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+                <div className="space-y-0.5">
+                  <span className="block text-xs sm:text-sm font-bold text-slate-900 group-hover:text-emerald-900 transition">
+                    {cat.label}
+                  </span>
+                  <span className="block text-[10px] text-slate-400 font-medium">
+                    Découvrir →
+                  </span>
+                </div>
+              </Link>
+            )
+          })}
         </div>
       </section>
 
-      {/* Featured Offers Section */}
+      {/* Featured Offers Section with BigTech Cards */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 border-b border-slate-200 pb-4">
-          <div>
-            <span className="text-xs font-bold uppercase tracking-wider text-emerald-700">
-              Opportunités du moment
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 border-b border-slate-200/80 pb-5">
+          <div className="space-y-1">
+            <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200/50">
+              <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+              <span>Bourse d'échange en temps réel</span>
+            </div>
+            <h2 className="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight">
               Dernières offres de troc agricole
             </h2>
           </div>
           <Link
             href="/offres"
-            className="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-700 hover:text-emerald-800 hover:underline"
+            className="inline-flex items-center gap-2 text-sm font-bold text-emerald-800 hover:text-emerald-900 bg-emerald-50/80 hover:bg-emerald-100/80 px-4 py-2 rounded-xl transition"
           >
-            <span>Voir toutes les offres</span>
+            <span>Consulter toutes les offres</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
@@ -159,91 +246,132 @@ export default function HomePage() {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="bg-white rounded-2xl h-80 animate-pulse border border-slate-200"></div>
+              <div key={i} className="bg-white rounded-3xl h-96 animate-pulse border border-slate-200/80"></div>
             ))}
           </div>
         ) : featuredOffers.length === 0 ? (
-          <div className="bg-white rounded-2xl p-12 text-center border border-slate-200 space-y-3">
-            <span className="text-4xl">🌾</span>
-            <h3 className="text-lg font-bold text-slate-800">Aucune offre pour le moment</h3>
-            <p className="text-sm text-slate-500">Soyez le premier à publier une annonce de troc !</p>
+          <div className="bg-white rounded-3xl p-12 text-center border border-slate-200 shadow-sm space-y-4 max-w-xl mx-auto">
+            <div className="w-16 h-16 rounded-full bg-emerald-50 flex items-center justify-center mx-auto text-3xl">
+              🌾
+            </div>
+            <h3 className="text-xl font-bold text-slate-900">Aucune offre pour le moment</h3>
+            <p className="text-sm text-slate-500">
+              Soyez le premier exploitant à publier une annonce de troc solidaire !
+            </p>
             <Link
               href="/publier"
-              className="inline-block mt-2 px-5 py-2.5 bg-emerald-700 text-white text-sm font-semibold rounded-xl"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-700 hover:bg-emerald-800 text-white text-sm font-bold rounded-xl shadow transition"
             >
-              Déposer une annonce
+              <span>Déposer la première annonce</span>
+              <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
             {featuredOffers.map((offer) => {
               const resType = RESOURCE_TYPES.find((r) => r.value === offer.resource_type) || {
                 label: offer.resource_type,
                 icon: '📦',
               }
+              const iconUrl = CATEGORY_ICONS[offer.resource_type] || '/avatars/avatar-sprout.webp'
               const hasImage = offer.images && offer.images.length > 0
+              const userAvatar = offer.user?.avatar_url || offer.user?.avatarUrl || '/avatars/avatar-farmer-w.webp'
+
               return (
                 <Link
                   key={offer.id}
                   href={`/offres/${offer.id}`}
-                  className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs hover:shadow-md transition flex flex-col group"
+                  className="bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] hover:shadow-xl transition-all duration-300 flex flex-col group card-lift"
                 >
-                  {/* Image or Category placeholder */}
-                  <div className="relative h-48 bg-slate-100 overflow-hidden">
+                  {/* Image Container with Badges */}
+                  <div className="relative h-52 bg-slate-100 overflow-hidden">
                     {hasImage ? (
                       <img
                         src={offer.images[0].image_url}
                         alt={offer.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                        className="w-full h-full object-cover group-hover:scale-105 transition duration-500 ease-out"
                       />
                     ) : (
-                      <div className="w-full h-full flex flex-col items-center justify-center bg-emerald-50/50 text-emerald-700">
-                        <span className="text-5xl">{resType.icon}</span>
-                        <span className="text-xs font-bold mt-2 uppercase tracking-wide">
+                      <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-tr from-emerald-50 to-amber-50/50 text-emerald-800">
+                        <div className="w-20 h-20 rounded-full overflow-hidden p-1 shadow-sm bg-white/80">
+                          <Image
+                            src={iconUrl}
+                            alt={resType.label}
+                            width={80}
+                            height={80}
+                            className="w-full h-full object-contain"
+                          />
+                        </div>
+                        <span className="text-xs font-bold mt-2 text-emerald-900 tracking-wide">
                           {resType.label}
                         </span>
                       </div>
                     )}
-                    <div className="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-white/90 backdrop-blur text-xs font-bold text-emerald-800 flex items-center gap-1 shadow-xs">
-                      <span>{resType.icon}</span>
+
+                    {/* Floating Category Badge */}
+                    <div className="absolute top-3.5 left-3.5 px-3 py-1 rounded-full bg-white/95 backdrop-blur text-xs font-bold text-emerald-900 flex items-center gap-1.5 shadow-sm border border-white/60">
+                      <div className="w-4 h-4 rounded-full overflow-hidden shrink-0">
+                        <Image src={iconUrl} alt="" width={16} height={16} />
+                      </div>
                       <span>{resType.label}</span>
                     </div>
+
                     {offer.complement_type !== 'none' && (
-                      <div className="absolute top-3 right-3 px-2 py-1 rounded-lg bg-amber-500 text-white text-[11px] font-bold shadow-xs">
+                      <div className="absolute top-3.5 right-3.5 px-2.5 py-1 rounded-full bg-amber-500 text-white text-[11px] font-extrabold shadow-sm tracking-wide">
                         + Complément
                       </div>
                     )}
                   </div>
 
-                  {/* Body */}
-                  <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+                  {/* Body & Swap Specification */}
+                  <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
                     <div>
-                      <h3 className="font-bold text-slate-900 line-clamp-2 text-base group-hover:text-emerald-700 transition">
+                      <h3 className="font-bold text-slate-900 line-clamp-2 text-lg group-hover:text-emerald-800 transition leading-snug">
                         {offer.title}
                       </h3>
 
-                      {/* Exchange Details Box */}
-                      <div className="mt-3.5 p-3 rounded-xl bg-slate-50 border border-slate-100 space-y-2 text-xs">
-                        <div className="flex items-start gap-2">
-                          <span className="font-bold text-emerald-700 shrink-0">Propose :</span>
-                          <span className="text-slate-700 truncate">{offer.offered_resource}</span>
+                      {/* Barter Swap Details Box */}
+                      <div className="mt-4 p-3.5 rounded-2xl bg-slate-50/90 border border-slate-200/70 space-y-2 text-xs">
+                        <div className="flex items-center gap-2">
+                          <span className="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 font-bold text-[10px] uppercase">
+                            Propose
+                          </span>
+                          <span className="text-slate-800 font-medium truncate">{offer.offered_resource}</span>
                         </div>
-                        <div className="flex items-start gap-2">
-                          <span className="font-bold text-amber-700 shrink-0">Recherche :</span>
-                          <span className="text-slate-700 truncate">{offer.wanted_resource}</span>
+                        <div className="flex items-center gap-2">
+                          <span className="px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 font-bold text-[10px] uppercase">
+                            Recherche
+                          </span>
+                          <span className="text-slate-800 font-medium truncate">{offer.wanted_resource}</span>
                         </div>
                       </div>
                     </div>
 
-                    {/* Footer */}
-                    <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-                      <div className="flex items-center gap-1">
-                        <MapPin className="w-3.5 h-3.5 text-slate-400" />
-                        <span className="truncate max-w-[140px]">{offer.location}</span>
+                    {/* Author & Location Footer */}
+                    <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-full overflow-hidden border border-emerald-200/80 bg-emerald-50 shrink-0">
+                          <img
+                            src={userAvatar}
+                            alt=""
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-xs font-bold text-slate-800 truncate max-w-[130px]">
+                            {offer.user?.full_name || 'Agriculteur'}
+                          </span>
+                          <div className="flex items-center gap-1 text-[11px] text-slate-400">
+                            <MapPin className="w-3 h-3 text-emerald-600" />
+                            <span>{offer.location}</span>
+                          </div>
+                        </div>
                       </div>
-                      <span className="text-emerald-700 font-semibold truncate max-w-[110px]">
-                        {offer.user?.full_name || 'Agriculteur'}
-                      </span>
+
+                      <div className="text-emerald-700 font-bold text-xs group-hover:translate-x-1 transition-transform flex items-center gap-1">
+                        <span>Voir</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </div>
                     </div>
                   </div>
                 </Link>
@@ -253,72 +381,122 @@ export default function HomePage() {
         )}
       </section>
 
-      {/* How it works */}
-      <section className="bg-emerald-50/60 border-y border-emerald-100 py-16">
+      {/* How it Works with BigTech Flow */}
+      <section className="bg-gradient-to-b from-white via-emerald-50/40 to-white border-y border-emerald-950/[0.06] py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto space-y-3 mb-12">
-            <span className="text-xs font-bold uppercase tracking-wider text-emerald-800">
-              Simple, rapide et direct
+          <div className="text-center max-w-2xl mx-auto space-y-3 mb-16">
+            <span className="text-xs font-bold uppercase tracking-wider text-emerald-800 bg-emerald-100/70 px-3.5 py-1 rounded-full border border-emerald-300/40">
+              Processus 100% direct & sécurisé
             </span>
-            <h2 className="text-3xl font-extrabold text-slate-900">
+            <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
               Comment fonctionne AgriTroc ?
             </h2>
-            <p className="text-sm text-slate-600">
-              Pas de commissions, pas de blocages bancaires. Un modèle d’échange basé sur la confiance locale.
+            <p className="text-base text-slate-600">
+              Pas d'intermédiaires, pas de commissions bancaires. Un modèle d’échange équitable fondé sur l'entraide agricole locale.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-white p-6 rounded-2xl border border-emerald-100 shadow-xs space-y-4 text-center">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-800 font-black text-xl flex items-center justify-center mx-auto">
-                1
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+            <div className="bg-white p-8 rounded-3xl border border-slate-200/80 shadow-[0_4px_20px_rgba(0,0,0,0.03)] card-lift space-y-5">
+              <div className="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-800 font-black text-xl flex items-center justify-center border border-emerald-200/60 shadow-xs">
+                01
               </div>
-              <h3 className="text-lg font-bold text-slate-900">Publiez votre offre</h3>
+              <h3 className="text-xl font-bold text-slate-900">Publiez votre annonce</h3>
               <p className="text-sm text-slate-600 leading-relaxed">
-                Décrivez précisément la ressource que vous proposez et ce que vous souhaitez recevoir en échange.
+                Décrivez la ressource disponible dans votre champ (semences, matériel, bétail, récolte) et ce dont vous avez besoin en retour.
               </p>
             </div>
 
-            <div className="bg-white p-6 rounded-2xl border border-emerald-100 shadow-xs space-y-4 text-center">
-              <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-800 font-black text-xl flex items-center justify-center mx-auto">
-                2
+            <div className="bg-white p-8 rounded-3xl border border-slate-200/80 shadow-[0_4px_20px_rgba(0,0,0,0.03)] card-lift space-y-5">
+              <div className="w-14 h-14 rounded-2xl bg-amber-50 text-amber-800 font-black text-xl flex items-center justify-center border border-amber-200/60 shadow-xs">
+                02
               </div>
-              <h3 className="text-lg font-bold text-slate-900">Discutez sur AgriTroc</h3>
+              <h3 className="text-xl font-bold text-slate-900">Discutez sur AgriTroc</h3>
               <p className="text-sm text-slate-600 leading-relaxed">
-                Échangez en direct grâce à la messagerie intégrée pour convenir des modalités, quantités et compléments en toute sécurité.
+                Utilisez la messagerie interne intégrée pour négocier en direct les volumes, équivalences et compléments en toute sécurité.
               </p>
             </div>
 
-            <div className="bg-white p-6 rounded-2xl border border-emerald-100 shadow-xs space-y-4 text-center">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-800 font-black text-xl flex items-center justify-center mx-auto">
-                3
+            <div className="bg-white p-8 rounded-3xl border border-slate-200/80 shadow-[0_4px_20px_rgba(0,0,0,0.03)] card-lift space-y-5">
+              <div className="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-800 font-black text-xl flex items-center justify-center border border-emerald-200/60 shadow-xs">
+                03
               </div>
-              <h3 className="text-lg font-bold text-slate-900">Concluez sur le terrain</h3>
+              <h3 className="text-xl font-bold text-slate-900">Concluez sur le terrain</h3>
               <p className="text-sm text-slate-600 leading-relaxed">
-                Rencontrez votre partenaire agricole, procédez à la remise des ressources et marquez le troc comme conclu.
+                Retrouvez l'exploitant partenaire, échangez physiquement les marchandises et marquez l'opération comme réalisée.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Trust Banner */}
+      {/* Trust & Value Proposition Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-gradient-to-r from-emerald-800 to-emerald-900 rounded-3xl p-8 sm:p-12 text-white flex flex-col md:flex-row items-center justify-between gap-8 shadow-lg">
-          <div className="space-y-4 max-w-xl text-center md:text-left">
-            <h2 className="text-2xl sm:text-3xl font-extrabold">
-              Vous avez des semences ou des équipements inexploités ?
-            </h2>
-            <p className="text-emerald-100 text-sm sm:text-base leading-relaxed">
-              Transformez vos excédents en opportunités pour développer votre exploitation. Rejoignez la communauté paysanne d'AgriTroc dès aujourd'hui.
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="bg-white p-8 rounded-3xl border border-slate-200/80 shadow-xs space-y-3">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-100/70 text-emerald-800 flex items-center justify-center">
+              <Shield className="w-6 h-6" />
+            </div>
+            <h3 className="text-lg font-bold text-slate-900">Protection contre l'endettement</h3>
+            <p className="text-sm text-slate-600 leading-relaxed">
+              Acquérez vos intrants et machines sans recourir aux crédits usuraires ou aux taux d'intérêt étouffants.
             </p>
           </div>
-          <Link
-            href="/publier"
-            className="shrink-0 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-8 py-4 rounded-2xl text-base shadow transition transform hover:-translate-y-0.5"
-          >
-            Publier un troc gratuitement
-          </Link>
+
+          <div className="bg-white p-8 rounded-3xl border border-slate-200/80 shadow-xs space-y-3">
+            <div className="w-12 h-12 rounded-2xl bg-amber-100/70 text-amber-800 flex items-center justify-center">
+              <TrendingUp className="w-6 h-6" />
+            </div>
+            <h3 className="text-lg font-bold text-slate-900">Zéro gaspillage post-récolte</h3>
+            <p className="text-sm text-slate-600 leading-relaxed">
+              Valorisez immédiatement vos surplus périssables contre des matériaux durables avant qu'ils ne se dégradent.
+            </p>
+          </div>
+
+          <div className="bg-white p-8 rounded-3xl border border-slate-200/80 shadow-xs space-y-3">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-100/70 text-emerald-800 flex items-center justify-center">
+              <Users className="w-6 h-6" />
+            </div>
+            <h3 className="text-lg font-bold text-slate-900">Réseau d'entraide paysanne</h3>
+            <p className="text-sm text-slate-600 leading-relaxed">
+              Renforcez les liens de coopération entre communautés de cultivateurs, d'éleveurs et de transformateurs du Sénégal.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Premium BigTech Call to Action Banner */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative overflow-hidden bg-gradient-to-r from-[#022c22] via-[#04402a] to-[#065f46] rounded-3xl p-8 sm:p-14 text-white shadow-2xl border border-emerald-500/20">
+          <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-amber-400/20 rounded-full blur-3xl pointer-events-none"></div>
+          <div className="relative flex flex-col lg:flex-row items-center justify-between gap-8 z-10">
+            <div className="space-y-4 max-w-2xl text-center lg:text-left">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-xs font-semibold text-emerald-200">
+                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                <span>Rejoignez plus de 500 exploitants actifs</span>
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-black tracking-tight leading-tight">
+                Prêt à troquer vos récoltes ou votre équipement ?
+              </h2>
+              <p className="text-emerald-100/85 text-base sm:text-lg leading-relaxed">
+                La publication est gratuite, sans engagement, et accessible directement depuis votre smartphone.
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3.5 shrink-0">
+              <Link
+                href="/publier"
+                className="bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold px-8 py-4 rounded-2xl text-base shadow-[0_4px_20px_rgba(245,158,11,0.4)] transition-all transform hover:-translate-y-0.5 active:translate-y-0 text-center"
+              >
+                Déposer une annonce de troc
+              </Link>
+              <Link
+                href="/offres"
+                className="bg-white/10 hover:bg-white/20 text-white font-semibold px-6 py-4 rounded-2xl text-base border border-white/20 transition backdrop-blur text-center"
+              >
+                Explorer la bourse
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
     </div>

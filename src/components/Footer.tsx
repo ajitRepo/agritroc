@@ -1,81 +1,85 @@
 import React from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { PhoneCall, HeartHandshake, ShieldCheck } from 'lucide-react'
+import { MessageSquare, HeartHandshake, ShieldCheck, Sparkles, MapPin } from 'lucide-react'
 
 export default function Footer() {
   return (
-    <footer className="bg-slate-900 text-slate-300 border-t border-slate-800 pt-12 pb-8 mt-20">
+    <footer className="bg-[#031510] text-slate-300 border-t border-emerald-950/40 pt-16 pb-12 mt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-14">
           {/* Brand Col */}
           <div className="space-y-4 md:col-span-1">
-            <div className="flex items-center gap-2.5">
+            <Link href="/" className="flex items-center gap-3">
               <Image
                 src="/logo-icon.png"
                 alt="AgriTroc"
-                width={36}
-                height={36}
-                className="rounded-xl"
+                width={38}
+                height={38}
+                className="rounded-2xl border border-emerald-500/20"
               />
-              <span className="text-xl font-black text-white">
-                Agri<span className="text-amber-500">Troc</span>
+              <span className="text-2xl font-black text-white tracking-tight">
+                Agri<span className="text-emerald-400">Troc</span>
               </span>
-            </div>
-            <p className="text-sm text-slate-400 leading-relaxed">
-              La 1ère plateforme de troc et d'entraide agricole au Sénégal. Échangez semences, bétail, parcelles, machines et récoltes sans intermédiaire financier imposé.
+            </Link>
+            <p className="text-sm text-emerald-100/70 leading-relaxed">
+              La bourse de troc et d'entraide agricole n°1 au Sénégal. Échangez semences, bétail, machines et récoltes directement sans intermédiaire bancaire.
             </p>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-900/50 border border-emerald-500/20 text-emerald-300 text-xs font-semibold">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span>100% Développé pour le Sénégal</span>
+            </div>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-white font-semibold text-sm mb-4 tracking-wider uppercase">Catégories de Troc</h4>
+            <h4 className="text-white font-bold text-sm mb-4 tracking-wider uppercase">Catégories de Troc</h4>
             <ul className="space-y-2.5 text-sm">
-              <li><Link href="/offres?resource_type=seeds" className="hover:text-emerald-400 transition">🌱 Semences & Plants</Link></li>
-              <li><Link href="/offres?resource_type=livestock" className="hover:text-emerald-400 transition">🐄 Bétail & Élevage</Link></li>
-              <li><Link href="/offres?resource_type=land" className="hover:text-emerald-400 transition">🌍 Terres & Parcelles</Link></li>
-              <li><Link href="/offres?resource_type=machinery" className="hover:text-emerald-400 transition">🚜 Matériel & Tracteurs</Link></li>
-              <li><Link href="/offres?resource_type=production" className="hover:text-emerald-400 transition">🌾 Récoltes & Fourrage</Link></li>
+              <li><Link href="/offres?resource_type=seeds" className="hover:text-emerald-400 transition flex items-center gap-2"><span>🌱</span> Semences & Plants</Link></li>
+              <li><Link href="/offres?resource_type=livestock" className="hover:text-emerald-400 transition flex items-center gap-2"><span>🐄</span> Bétail & Élevage</Link></li>
+              <li><Link href="/offres?resource_type=land" className="hover:text-emerald-400 transition flex items-center gap-2"><span>🌍</span> Terres & Parcelles</Link></li>
+              <li><Link href="/offres?resource_type=machinery" className="hover:text-emerald-400 transition flex items-center gap-2"><span>🚜</span> Matériel & Tracteurs</Link></li>
+              <li><Link href="/offres?resource_type=production" className="hover:text-emerald-400 transition flex items-center gap-2"><span>🌾</span> Récoltes & Fourrage</Link></li>
             </ul>
           </div>
 
           {/* Regions */}
           <div>
-            <h4 className="text-white font-semibold text-sm mb-4 tracking-wider uppercase">Principales Régions</h4>
-            <ul className="space-y-2.5 text-sm text-slate-400">
-              <li>Kaolack & Bassin Arachidier</li>
-              <li>Saint-Louis & Vallée du Fleuve</li>
-              <li>Thiès & Niayes</li>
-              <li>Fatick & Sine Saloum</li>
-              <li>Tambacounda & Casamance</li>
+            <h4 className="text-white font-bold text-sm mb-4 tracking-wider uppercase">Bassins Agricoles</h4>
+            <ul className="space-y-2.5 text-sm text-emerald-100/60">
+              <li className="flex items-center gap-2"><MapPin className="w-3.5 h-3.5 text-emerald-500" /> Kaolack & Bassin Arachidier</li>
+              <li className="flex items-center gap-2"><MapPin className="w-3.5 h-3.5 text-emerald-500" /> Saint-Louis & Vallée du Fleuve</li>
+              <li className="flex items-center gap-2"><MapPin className="w-3.5 h-3.5 text-emerald-500" /> Thiès & Zone des Niayes</li>
+              <li className="flex items-center gap-2"><MapPin className="w-3.5 h-3.5 text-emerald-500" /> Fatick & Sine Saloum</li>
+              <li className="flex items-center gap-2"><MapPin className="w-3.5 h-3.5 text-emerald-500" /> Tambacounda & Casamance</li>
             </ul>
           </div>
 
-          {/* Trust & WhatsApp */}
+          {/* Security & Direct Communication */}
           <div>
-            <h4 className="text-white font-semibold text-sm mb-4 tracking-wider uppercase">Sécurité & Contact</h4>
-            <div className="space-y-3 text-sm text-slate-400">
-              <div className="flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                <span>Authentification WhatsApp 100% sécurisée</span>
+            <h4 className="text-white font-bold text-sm mb-4 tracking-wider uppercase">Confiance & Échange</h4>
+            <div className="space-y-3.5 text-sm text-emerald-100/70">
+              <div className="flex items-center gap-2.5">
+                <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span>Profils vérifiés par téléphone</span>
               </div>
-              <div className="flex items-center gap-2">
-                <HeartHandshake className="w-4 h-4 text-amber-400" />
-                <span>Échanges directs de paysan à paysan</span>
+              <div className="flex items-center gap-2.5">
+                <MessageSquare className="w-4 h-4 text-amber-400 shrink-0" />
+                <span>Messagerie instantanée sur AgriTroc</span>
               </div>
-              <div className="flex items-center gap-2">
-                <PhoneCall className="w-4 h-4 text-emerald-400" />
-                <span>Mise en relation instantanée</span>
+              <div className="flex items-center gap-2.5">
+                <HeartHandshake className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span>Échanges directs sans commissions</span>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="border-t border-slate-800 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-slate-500">
-          <p>© 2026 AgriTroc Sénégal. Tous droits réservés.</p>
+        <div className="border-t border-emerald-950/60 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-emerald-100/40">
+          <p>© 2026 AgriTroc Sénégal. L'entraide agricole nouvelle génération.</p>
           <div className="flex gap-6">
-            <Link href="/offres" className="hover:text-slate-300">Toutes les offres</Link>
-            <Link href="/publier" className="hover:text-slate-300">Publier une annonce</Link>
+            <Link href="/offres" className="hover:text-emerald-300 transition">Toutes les offres</Link>
+            <Link href="/publier" className="hover:text-emerald-300 transition">Publier une annonce</Link>
           </div>
         </div>
       </div>
