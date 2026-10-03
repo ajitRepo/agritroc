@@ -255,14 +255,14 @@ export default function HomePage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
-            {featuredOffers.map((offer) => {
+            {featuredOffers.map((offer, idx) => {
               const resType = RESOURCE_TYPES.find((r) => r.value === offer.resource_type) || {
                 label: offer.resource_type,
                 icon: '📦',
               }
               const iconUrl = CATEGORY_ICONS[offer.resource_type] || '/avatars/avatar-sprout.webp'
               const hasImage = offer.images && offer.images.length > 0
-              const userAvatar = offer.user?.avatar_url || offer.user?.avatarUrl || '/avatars/avatar-farmer-w.webp'
+              const userAvatar = offer.user?.avatar_url || offer.user?.avatarUrl || (idx % 2 === 0 ? '/avatars/avatar-farmer-m.webp' : '/avatars/avatar-farmer-w.webp')
 
               return (
                 <Link
@@ -448,6 +448,67 @@ export default function HomePage() {
             <p className="text-sm text-slate-600 leading-relaxed">
               Renforcez les liens de coopération entre communautés de cultivateurs, d'éleveurs et de transformateurs du Sénégal.
             </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Real Farmer Testimonials */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+        <div className="text-center max-w-2xl mx-auto space-y-2">
+          <span className="text-xs font-bold uppercase tracking-wider text-emerald-800 bg-emerald-100/70 px-3.5 py-1 rounded-full border border-emerald-300/40">
+            Solidarité sur le terrain
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+            Paroles de producteurs
+          </h2>
+          <p className="text-sm text-slate-600">
+            L'entraide agricole vécue au quotidien dans les terroirs du Sénégal.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+          {/* Card 1 - Modou */}
+          <div className="bg-white p-6 sm:p-7 rounded-3xl border border-slate-200/80 shadow-xs space-y-4 flex flex-col justify-between">
+            <p className="text-sm sm:text-base text-slate-700 leading-relaxed italic">
+              &ldquo;J'avais un surplus de semences certifiées d'arachide et un collègue avait des bottes de foin pour le bétail. En 48h sur AgriTroc, l'échange s'est conclu sans sortir 1 franc. C'est l'entraide de nos terroirs.&rdquo;
+            </p>
+            <div className="flex items-center gap-3 pt-3 border-t border-slate-100">
+              <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-emerald-200 shrink-0">
+                <Image
+                  src="/avatars/avatar-farmer-m.webp"
+                  alt="Modou Ndiaye"
+                  width={48}
+                  height={48}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div>
+                <h4 className="text-sm font-bold text-slate-900">Modou Ndiaye</h4>
+                <p className="text-xs text-slate-500">Producteur d'arachide & céréales • Kaolack</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Card 2 - Awa */}
+          <div className="bg-white p-6 sm:p-7 rounded-3xl border border-slate-200/80 shadow-xs space-y-4 flex flex-col justify-between">
+            <p className="text-sm sm:text-base text-slate-700 leading-relaxed italic">
+              &ldquo;Au lieu de risquer de perdre mes surplus de mangues et légumes de saison, je les ai échangés contre du compost organique et du matériel d'irrigation. C'est simple, direct et respectueux.&rdquo;
+            </p>
+            <div className="flex items-center gap-3 pt-3 border-t border-slate-100">
+              <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-emerald-200 shrink-0">
+                <Image
+                  src="/avatars/avatar-farmer-w.webp"
+                  alt="Awa Seck"
+                  width={48}
+                  height={48}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div>
+                <h4 className="text-sm font-bold text-slate-900">Awa Seck</h4>
+                <p className="text-xs text-slate-500">Maraîchère & arboricultrice • Thiès (Niayes)</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
