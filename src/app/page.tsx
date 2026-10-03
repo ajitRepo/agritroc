@@ -31,11 +31,11 @@ const CATEGORY_ICONS: Record<string, string> = {
 }
 
 const POPULAR_SEARCHES = [
-  'Semences d\'arachide',
-  'Tracteur agricole',
-  'Tourteau de maïs',
-  'Génisses & zébus',
-  'Mangues Kent',
+  'Semences d\'arachide certifiées',
+  'Tracteur & Motoculteur',
+  'Tourteau & Foin pour bétail',
+  'Génisses & Zébus',
+  'Mangues Kent de saison',
   'Motopompe diesel',
 ]
 
@@ -72,62 +72,63 @@ export default function HomePage() {
 
   return (
     <div className="space-y-20 pb-20">
-      {/* Hero Section with BigTech Ambient Glow & Grid Pattern */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#022c22] via-[#04402a] to-[#011d16] text-white pt-20 pb-28 px-4 sm:px-6 lg:px-8 bg-grid-dark">
-        {/* Ambient luminous glow orbs */}
+      {/* Hero Section — Vibrant, Sunlit & High-Contrast for Farmers */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#064e3b] via-[#043d2c] to-[#022c22] text-white pt-20 pb-28 px-4 sm:px-6 lg:px-8 border-b border-emerald-700/30">
+        {/* Luminous Warm Sunlight Glow & Golden Agricultural Beams */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full pointer-events-none overflow-hidden">
-          <div className="absolute -top-32 left-1/4 w-[32rem] h-[32rem] bg-emerald-500/20 rounded-full blur-[120px] animate-glow pointer-events-none"></div>
-          <div className="absolute top-1/3 right-1/4 w-[28rem] h-[28rem] bg-amber-500/15 rounded-full blur-[100px] pointer-events-none"></div>
+          <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[42rem] h-[24rem] bg-gradient-to-b from-amber-400/25 via-emerald-400/20 to-transparent rounded-full blur-[100px] pointer-events-none"></div>
+          <div className="absolute top-1/3 left-10 w-80 h-80 bg-emerald-400/20 rounded-full blur-[90px] pointer-events-none"></div>
+          <div className="absolute top-1/4 right-10 w-80 h-80 bg-amber-400/20 rounded-full blur-[90px] pointer-events-none"></div>
         </div>
 
-        <div className="relative max-w-5xl mx-auto text-center space-y-8">
-          {/* Live Platform Badge */}
-          <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-emerald-950/70 border border-emerald-400/30 text-emerald-200 text-xs sm:text-sm font-semibold backdrop-blur-md shadow-sm">
+        <div className="relative max-w-5xl mx-auto text-center space-y-8 z-10">
+          {/* Live Platform Badge — High Contrast */}
+          <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-[#02241b]/90 border border-emerald-400/50 text-white text-xs sm:text-sm font-bold shadow-md backdrop-blur-md">
             <span className="relative flex h-2.5 w-2.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400"></span>
             </span>
-            <span>Bourse d'échange agricole en direct au Sénégal</span>
-            <span className="hidden sm:inline text-emerald-400/50">•</span>
-            <span className="hidden sm:inline text-amber-400 font-bold">100% sans commission</span>
+            <span className="text-white">Bourse d'échange agricole en direct au Sénégal</span>
+            <span className="text-emerald-300 font-mono">•</span>
+            <span className="text-amber-300 font-extrabold uppercase tracking-wide">0 FCFA Commission</span>
           </div>
 
-          {/* Main Headline */}
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[1.1] text-balance">
-            Échangez vos ressources agricoles <br className="hidden sm:inline" />
-            <span className="bg-gradient-to-r from-amber-300 via-amber-400 to-emerald-300 bg-clip-text text-transparent">
-              en direct, sans argent liquide
+          {/* Main Headline — Crisp White & Warm Radiant Gold */}
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[1.12] text-balance text-white drop-shadow-sm">
+            Échangez vos récoltes & ressources <br className="hidden sm:inline" />
+            <span className="text-amber-300 underline decoration-amber-400/60 decoration-wavy underline-offset-8">
+              directement, sans argent liquide
             </span>
           </h1>
 
-          {/* Subtitle */}
-          <p className="max-w-2xl mx-auto text-base sm:text-xl text-emerald-100/80 leading-relaxed font-normal">
-            Semences certifiées, machines, bétail, fertilisants ou surplus de récoltes. Troquez directement d'agriculteur à agriculteur dans tout le Sénégal.
+          {/* Subtitle — High Readability in Bright Sunlight */}
+          <p className="max-w-3xl mx-auto text-base sm:text-xl text-emerald-50 font-medium leading-relaxed drop-shadow-xs">
+            La bourse d'échange solidaire entre agriculteurs, éleveurs et coopératives. Semences certifiées, matériel, bétail, fertilisants ou surplus de récoltes : troquez librement d'exploitant à exploitant dans les 14 régions du Sénégal.
           </p>
 
-          {/* Search Command Bar */}
-          <div className="pt-4 max-w-4xl mx-auto">
+          {/* Search Command Bar — High Contrast White Card & Sunlit Amber CTA */}
+          <div className="pt-2 max-w-4xl mx-auto">
             <form
               onSubmit={handleSearchSubmit}
-              className="bg-white/95 backdrop-blur-xl p-2.5 sm:p-3 rounded-2xl sm:rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/20 flex flex-col sm:flex-row gap-2.5 text-slate-800"
+              className="bg-white p-3 sm:p-3.5 rounded-2xl sm:rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.35)] border-2 border-emerald-100 flex flex-col sm:flex-row gap-2.5 text-slate-800"
             >
-              <div className="flex-1 flex items-center gap-3 px-4 py-3 bg-slate-50/80 rounded-xl sm:rounded-2xl border border-slate-200/80 hover:border-emerald-500 transition">
-                <Search className="w-5 h-5 text-emerald-600 shrink-0" />
+              <div className="flex-1 flex items-center gap-3 px-4 py-3.5 bg-slate-50 rounded-xl sm:rounded-2xl border border-slate-200 hover:border-emerald-600 transition">
+                <Search className="w-5 h-5 text-emerald-700 shrink-0" />
                 <input
                   type="text"
-                  placeholder="Que cherchez-vous ? (ex: semences maïs, tracteur, tourteaux...)"
+                  placeholder="Que cherchez-vous ? (ex: semences maïs, tracteur, foin...)"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-transparent border-none outline-none text-sm sm:text-base placeholder:text-slate-400 font-medium"
+                  className="w-full bg-transparent border-none outline-none text-sm sm:text-base text-slate-900 placeholder:text-slate-500 font-semibold"
                 />
               </div>
 
-              <div className="sm:w-60 flex items-center gap-2.5 px-4 py-3 bg-slate-50/80 rounded-xl sm:rounded-2xl border border-slate-200/80 hover:border-emerald-500 transition">
-                <MapPin className="w-5 h-5 text-emerald-600 shrink-0" />
+              <div className="sm:w-64 flex items-center gap-2.5 px-4 py-3.5 bg-slate-50 rounded-xl sm:rounded-2xl border border-slate-200 hover:border-emerald-600 transition">
+                <MapPin className="w-5 h-5 text-emerald-700 shrink-0" />
                 <select
                   value={selectedRegion}
                   onChange={(e) => setSelectedRegion(e.target.value)}
-                  className="w-full bg-transparent border-none outline-none text-sm sm:text-base text-slate-700 font-medium cursor-pointer"
+                  className="w-full bg-transparent border-none outline-none text-sm sm:text-base text-slate-800 font-semibold cursor-pointer"
                 >
                   <option value="">Toutes les régions</option>
                   {SENEGAL_REGIONS.map((r) => (
@@ -140,16 +141,16 @@ export default function HomePage() {
 
               <button
                 type="submit"
-                className="bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-bold px-7 py-3.5 rounded-xl sm:rounded-2xl text-sm sm:text-base flex items-center justify-center gap-2.5 shadow-[0_4px_14px_rgba(5,96,58,0.3)] transition-all transform hover:-translate-y-0.5 active:translate-y-0 shrink-0"
+                className="bg-amber-400 hover:bg-amber-500 text-slate-950 font-black px-8 py-4 rounded-xl sm:rounded-2xl text-sm sm:text-base flex items-center justify-center gap-2.5 shadow-[0_4px_20px_rgba(245,158,11,0.4)] transition-all transform hover:-translate-y-0.5 active:translate-y-0 shrink-0 cursor-pointer"
               >
-                <span>Rechercher</span>
-                <ArrowRight className="w-4 h-4" />
+                <span>Trouver un troc</span>
+                <ArrowRight className="w-4 h-4 stroke-[3]" />
               </button>
             </form>
 
-            {/* Popular Search Chips */}
-            <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-xs text-emerald-200/90">
-              <span className="font-semibold text-emerald-300">Recherches fréquentes :</span>
+            {/* Popular Search Chips — High Legibility */}
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-xs">
+              <span className="font-bold text-amber-300">Recherches paysannes :</span>
               {POPULAR_SEARCHES.map((query) => (
                 <button
                   key={query}
@@ -158,7 +159,7 @@ export default function HomePage() {
                     setSearchQuery(query)
                     window.location.href = `/offres?q=${encodeURIComponent(query)}`
                   }}
-                  className="px-2.5 py-1 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 transition-colors backdrop-blur text-emerald-100"
+                  className="px-3 py-1 rounded-full bg-white/20 hover:bg-white/30 text-white font-semibold border border-white/20 transition-colors backdrop-blur shadow-xs cursor-pointer"
                 >
                   {query}
                 </button>
@@ -166,30 +167,30 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Social Proof / Live Metrics */}
-          <div className="pt-8 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto border-t border-emerald-800/40 text-left">
-            <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur">
-              <p className="text-2xl sm:text-3xl font-black text-amber-400">0 FCFA</p>
-              <p className="text-xs text-emerald-200/80 mt-0.5">Aucune commission sur vos trocs</p>
+          {/* Social Proof / Live Metrics — High-contrast Frosted Cards */}
+          <div className="pt-8 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto border-t border-emerald-600/40 text-left">
+            <div className="p-4 rounded-2xl bg-[#02241b]/80 border border-emerald-500/30 backdrop-blur-md shadow-sm">
+              <p className="text-2xl sm:text-3xl font-black text-amber-300">0 FCFA</p>
+              <p className="text-xs text-white font-semibold mt-1">Zéro commission bancaire</p>
             </div>
-            <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur">
+            <div className="p-4 rounded-2xl bg-[#02241b]/80 border border-emerald-500/30 backdrop-blur-md shadow-sm">
               <p className="text-2xl sm:text-3xl font-black text-white">14</p>
-              <p className="text-xs text-emerald-200/80 mt-0.5">Régions du Sénégal couvertes</p>
+              <p className="text-xs text-white font-semibold mt-1">Régions du Sénégal connectées</p>
             </div>
-            <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur">
-              <p className="text-2xl sm:text-3xl font-black text-emerald-400">100%</p>
-              <p className="text-xs text-emerald-200/80 mt-0.5">Négociation directe sur AgriTroc</p>
+            <div className="p-4 rounded-2xl bg-[#02241b]/80 border border-emerald-500/30 backdrop-blur-md shadow-sm">
+              <p className="text-2xl sm:text-3xl font-black text-emerald-300">100%</p>
+              <p className="text-xs text-white font-semibold mt-1">Direct sur AgriTroc</p>
             </div>
-            <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur">
-              <p className="text-2xl sm:text-3xl font-black text-amber-400">⚡ Direct</p>
-              <p className="text-xs text-emerald-200/80 mt-0.5">Entre producteurs & coopératives</p>
+            <div className="p-4 rounded-2xl bg-[#02241b]/80 border border-emerald-500/30 backdrop-blur-md shadow-sm">
+              <p className="text-2xl sm:text-3xl font-black text-amber-300">Solidaire</p>
+              <p className="text-xs text-white font-semibold mt-1">De paysan à paysan</p>
             </div>
           </div>
         </div>
       </section>
 
       {/* Modern 3D Categories Showcase */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 sm:-mt-20 relative z-10">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-14 sm:-mt-16 relative z-10">
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5 sm:gap-4">
           {RESOURCE_TYPES.map((cat) => {
             const iconUrl = CATEGORY_ICONS[cat.value] || '/avatars/avatar-sprout.webp'
@@ -197,7 +198,7 @@ export default function HomePage() {
               <Link
                 key={cat.value}
                 href={`/offres?resource_type=${cat.value}`}
-                className="bg-white/95 hover:bg-emerald-50/90 p-4 rounded-3xl border border-emerald-900/[0.08] shadow-[0_4px_20px_-2px_rgba(0,0,0,0.05)] hover:shadow-xl transition-all duration-300 text-center group flex flex-col items-center justify-center gap-2.5 transform hover:-translate-y-1"
+                className="bg-white hover:bg-emerald-50/90 p-4 rounded-3xl border border-emerald-900/[0.08] shadow-[0_4px_20px_-2px_rgba(0,0,0,0.06)] hover:shadow-xl transition-all duration-300 text-center group flex flex-col items-center justify-center gap-2.5 transform hover:-translate-y-1"
               >
                 <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden p-1 bg-gradient-to-b from-emerald-100 to-amber-50 group-hover:scale-110 transition duration-300 shadow-inner">
                   <Image
@@ -212,7 +213,7 @@ export default function HomePage() {
                   <span className="block text-xs sm:text-sm font-bold text-slate-900 group-hover:text-emerald-900 transition">
                     {cat.label}
                   </span>
-                  <span className="block text-[10px] text-slate-400 font-medium">
+                  <span className="block text-[10px] text-slate-500 font-medium">
                     Découvrir →
                   </span>
                 </div>
@@ -226,7 +227,7 @@ export default function HomePage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 border-b border-slate-200/80 pb-5">
           <div className="space-y-1">
-            <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200/50">
+            <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-emerald-800 bg-emerald-100/70 px-3 py-1 rounded-full border border-emerald-300/40">
               <Sparkles className="w-3.5 h-3.5 text-amber-500" />
               <span>Bourse d'échange en temps réel</span>
             </div>
@@ -236,7 +237,7 @@ export default function HomePage() {
           </div>
           <Link
             href="/offres"
-            className="inline-flex items-center gap-2 text-sm font-bold text-emerald-800 hover:text-emerald-900 bg-emerald-50/80 hover:bg-emerald-100/80 px-4 py-2 rounded-xl transition"
+            className="inline-flex items-center gap-2 text-sm font-bold text-emerald-800 hover:text-emerald-900 bg-emerald-50 hover:bg-emerald-100 px-4 py-2.5 rounded-2xl transition border border-emerald-200/60"
           >
             <span>Consulter toutes les offres</span>
             <ArrowRight className="w-4 h-4" />
@@ -251,7 +252,7 @@ export default function HomePage() {
           </div>
         ) : featuredOffers.length === 0 ? (
           <div className="bg-white rounded-3xl p-12 text-center border border-slate-200 shadow-sm space-y-4 max-w-xl mx-auto">
-            <div className="w-16 h-16 rounded-full bg-emerald-50 flex items-center justify-center mx-auto text-3xl">
+            <div className="w-16 h-16 rounded-full bg-emerald-50 text-emerald-800 flex items-center justify-center mx-auto text-3xl">
               🌾
             </div>
             <h3 className="text-xl font-bold text-slate-900">Aucune offre pour le moment</h3>
@@ -260,7 +261,7 @@ export default function HomePage() {
             </p>
             <Link
               href="/publier"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-700 hover:bg-emerald-800 text-white text-sm font-bold rounded-xl shadow transition"
+              className="inline-flex items-center gap-2 px-6 py-3.5 bg-emerald-700 hover:bg-emerald-800 text-white text-sm font-bold rounded-2xl shadow transition"
             >
               <span>Déposer la première annonce</span>
               <ArrowRight className="w-4 h-4" />
@@ -386,13 +387,13 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto space-y-3 mb-16">
             <span className="text-xs font-bold uppercase tracking-wider text-emerald-800 bg-emerald-100/70 px-3.5 py-1 rounded-full border border-emerald-300/40">
-              Processus 100% direct & sécurisé
+              Processus 100% direct & sans commission
             </span>
             <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
-              Comment fonctionne AgriTroc ?
+              Comment fonctionne le troc sur AgriTroc ?
             </h2>
             <p className="text-base text-slate-600">
-              Pas d'intermédiaires, pas de commissions bancaires. Un modèle d’échange équitable fondé sur l'entraide agricole locale.
+              Pas d'intermédiaires financiers, pas de blocages bancaires. Un modèle d’échange équitable fondé sur l'entraide agricole locale.
             </p>
           </div>
 
@@ -411,7 +412,7 @@ export default function HomePage() {
               <div className="w-14 h-14 rounded-2xl bg-amber-50 text-amber-800 font-black text-xl flex items-center justify-center border border-amber-200/60 shadow-xs">
                 02
               </div>
-              <h3 className="text-xl font-bold text-slate-900">Discutez sur AgriTroc</h3>
+              <h3 className="text-xl font-bold text-slate-900">Négociez sur AgriTroc</h3>
               <p className="text-sm text-slate-600 leading-relaxed">
                 Utilisez la messagerie interne intégrée pour négocier en direct les volumes, équivalences et compléments en toute sécurité.
               </p>
@@ -467,31 +468,31 @@ export default function HomePage() {
 
       {/* Premium BigTech Call to Action Banner */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="relative overflow-hidden bg-gradient-to-r from-[#022c22] via-[#04402a] to-[#065f46] rounded-3xl p-8 sm:p-14 text-white shadow-2xl border border-emerald-500/20">
-          <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-amber-400/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="relative overflow-hidden bg-gradient-to-r from-[#064e3b] via-[#043d2c] to-[#022c22] rounded-3xl p-8 sm:p-14 text-white shadow-2xl border border-emerald-500/20">
+          <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-amber-400/25 rounded-full blur-3xl pointer-events-none"></div>
           <div className="relative flex flex-col lg:flex-row items-center justify-between gap-8 z-10">
             <div className="space-y-4 max-w-2xl text-center lg:text-left">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-xs font-semibold text-emerald-200">
-                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                <Sparkles className="w-3.5 h-3.5 text-amber-300" />
                 <span>Rejoignez plus de 500 exploitants actifs</span>
               </div>
               <h2 className="text-3xl sm:text-4xl font-black tracking-tight leading-tight">
                 Prêt à troquer vos récoltes ou votre équipement ?
               </h2>
-              <p className="text-emerald-100/85 text-base sm:text-lg leading-relaxed">
+              <p className="text-emerald-100 text-base sm:text-lg leading-relaxed font-normal">
                 La publication est gratuite, sans engagement, et accessible directement depuis votre smartphone.
               </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-3.5 shrink-0">
               <Link
                 href="/publier"
-                className="bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold px-8 py-4 rounded-2xl text-base shadow-[0_4px_20px_rgba(245,158,11,0.4)] transition-all transform hover:-translate-y-0.5 active:translate-y-0 text-center"
+                className="bg-amber-400 hover:bg-amber-500 text-slate-950 font-black px-8 py-4 rounded-2xl text-base shadow-[0_4px_20px_rgba(245,158,11,0.4)] transition-all transform hover:-translate-y-0.5 active:translate-y-0 text-center cursor-pointer"
               >
                 Déposer une annonce de troc
               </Link>
               <Link
                 href="/offres"
-                className="bg-white/10 hover:bg-white/20 text-white font-semibold px-6 py-4 rounded-2xl text-base border border-white/20 transition backdrop-blur text-center"
+                className="bg-white/10 hover:bg-white/20 text-white font-bold px-6 py-4 rounded-2xl text-base border border-white/20 transition backdrop-blur text-center"
               >
                 Explorer la bourse
               </Link>
