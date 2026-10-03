@@ -238,16 +238,16 @@ export default function ConnexionPage() {
                 <Image src="/logo-icon.png" alt="AgriTroc" width={64} height={64} />
               </div>
               <h1 className="text-2xl font-black text-slate-900">
-                Connexion WhatsApp
+                Connexion Sécurisée
               </h1>
               <p className="text-xs sm:text-sm text-slate-500 max-w-sm mx-auto leading-relaxed">
-                Entrez votre numéro sénégalais pour recevoir un code d'authentification par WhatsApp.
+                Entrez votre numéro sénégalais pour recevoir un code d'authentification instantané.
               </p>
             </div>
 
             <div className="space-y-2 text-left">
               <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-                Numéro WhatsApp
+                Numéro de téléphone
               </label>
               <div className="relative flex items-center">
                 <div className="absolute left-3.5 flex items-center pointer-events-none text-emerald-600">
@@ -259,7 +259,7 @@ export default function ConnexionPage() {
                   placeholder="+221 7X XXX XX XX"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3.5 bg-slate-50 border-2 border-slate-200 rounded-xl text-center text-lg font-bold text-slate-900 focus:outline-none focus:border-emerald-600 focus:bg-white transition"
+                  className="w-full pl-10 pr-4 py-3.5 bg-slate-50 border-2 border-slate-200/80 rounded-2xl text-center text-lg font-bold text-slate-900 focus:outline-none focus:border-emerald-600 focus:bg-white transition"
                   autoFocus
                 />
               </div>
@@ -271,14 +271,14 @@ export default function ConnexionPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 bg-emerald-700 hover:bg-emerald-800 disabled:opacity-60 text-white font-bold rounded-xl text-sm shadow-md transition flex items-center justify-center gap-2"
+              className="w-full py-4 bg-gradient-to-r from-emerald-700 to-emerald-800 hover:from-emerald-800 hover:to-emerald-900 disabled:opacity-60 text-white font-bold rounded-2xl text-sm shadow-[0_4px_14px_rgba(5,96,58,0.25)] transition flex items-center justify-center gap-2 cursor-pointer"
             >
               {loading ? (
                 <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
                 <>
                   <MessageSquare className="w-4 h-4" />
-                  <span>Recevoir le code WhatsApp</span>
+                  <span>Recevoir le code d'accès</span>
                 </>
               )}
             </button>

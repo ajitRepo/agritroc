@@ -12,6 +12,7 @@ import {
   CheckCheck,
   Clock,
   ArrowLeft,
+  Sparkles,
 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -116,25 +117,24 @@ export default function MessagesPage() {
   }
 
   if (isLoading) {
-    return <div className="p-12 text-center text-slate-500">Chargement des discussions...</div>
+    return <div className="p-16 text-center text-slate-500 font-medium">Chargement des discussions...</div>
   }
 
   const otherUser = activeConv?.other_user || activeConv?.otherUser
 
-
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden h-[78vh] flex flex-col md:flex-row">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="bg-white rounded-3xl border border-slate-200/80 shadow-[0_4px_30px_rgba(0,0,0,0.04)] overflow-hidden h-[80vh] flex flex-col md:flex-row">
         {/* Left column: Conversation list */}
         <div
-          className={`w-full md:w-80 lg:w-96 border-r border-slate-200 flex flex-col ${
+          className={`w-full md:w-80 lg:w-96 border-r border-slate-200/80 flex flex-col bg-white ${
             activeConvId ? 'hidden md:flex' : 'flex'
           }`}
         >
           <div className="p-4 border-b border-slate-100 flex items-center justify-between">
-            <h2 className="font-extrabold text-slate-900 text-lg flex items-center gap-2">
+            <h2 className="font-black text-slate-900 text-lg flex items-center gap-2">
               <MessageSquare className="w-5 h-5 text-emerald-700" />
-              <span>Discussions</span>
+              <span>Messagerie AgriTroc</span>
             </h2>
             <span className="text-xs px-2.5 py-1 bg-emerald-50 text-emerald-800 font-bold rounded-full">
               {conversations.length}
@@ -143,42 +143,40 @@ export default function MessagesPage() {
 
           <div className="flex-1 overflow-y-auto divide-y divide-slate-100">
             {loading ? (
-              <div className="p-6 text-center text-xs text-slate-400">Chargement...</div>
+              <div className="p-8 text-center text-xs text-slate-400">Chargement...</div>
             ) : conversations.length === 0 ? (
-              <div className="p-8 text-center space-y-2">
+              <div className="p-10 text-center space-y-3">
                 <span className="text-3xl">💬</span>
-                <p className="text-xs font-semibold text-slate-700">Aucune discussion ouverte</p>
-                <p className="text-[11px] text-slate-400">
-                  Consultez une offre et contactez le propriétaire pour démarrer un échange.
+                <p className="text-sm font-bold text-slate-700">Aucune discussion ouverte</p>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  Consultez une offre de troc et contactez le propriétaire pour démarrer une négociation.
                 </p>
               </div>
             ) : (
               conversations.map((conv) => {
                 const isSelected = conv.id === activeConvId
                 const other = conv.other_user || conv.otherUser
+                const avatar = other?.avatar_url || other?.avatarUrl || '/avatars/avatar-farmer-w.webp'
+
                 return (
                   <button
                     key={conv.id}
                     onClick={() => setActiveConvId(conv.id)}
-                    className={`w-full p-4 text-left transition flex items-start gap-3 hover:bg-slate-50 ${
-                      isSelected ? 'bg-emerald-50/60 border-l-4 border-emerald-600' : ''
+                    className={`w-full p-4 text-left transition-all flex items-start gap-3.5 hover:bg-slate-50 cursor-pointer ${
+                      isSelected ? 'bg-emerald-50/70 border-l-4 border-emerald-600' : ''
                     }`}
                   >
-                    <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-sm shrink-0 overflow-hidden">
-                      {other?.avatar_url || other?.avatarUrl ? (
-                        <img
-                          src={other.avatar_url || other.avatarUrl}
-                          alt=""
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        other?.full_name?.[0] || 'A'
-                      )}
+                    <div className="w-11 h-11 rounded-full overflow-hidden border border-emerald-200/80 bg-emerald-50 shrink-0 shadow-xs">
+                      <img
+                        src={avatar}
+                        alt=""
+                        className="w-full h-full object-cover"
+                      />
                     </div>
                     <div className="flex-1 min-w-0 space-y-1">
                       <div className="flex justify-between items-center">
                         <h4 className="text-xs font-bold text-slate-900 truncate">
-                          {other?.full_name || other?.phone || 'Membre'}
+                          {other?.full_name || other?.phone || 'Exploitant'}
                         </h4>
                         {conv.unread_count > 0 && (
                           <span className="w-4 h-4 bg-emerald-600 text-white rounded-full text-[10px] font-bold flex items-center justify-center">
@@ -186,7 +184,7 @@ export default function MessagesPage() {
                           </span>
                         )}
                       </div>
-                      <p className="text-[11px] font-medium text-emerald-800 truncate">
+                      <p className="text-[11px] font-bold text-emerald-800 truncate">
                         {conv.offer_title || conv.offerTitle || 'Offre de troc'}
                       </p>
                       <p className="text-xs text-slate-500 truncate">
@@ -202,14 +200,14 @@ export default function MessagesPage() {
 
         {/* Right column: Chat view */}
         <div
-          className={`flex-1 flex flex-col bg-slate-50/50 ${
+          className={`flex-1 flex flex-col bg-slate-50/40 ${
             !activeConvId ? 'hidden md:flex items-center justify-center' : 'flex'
           }`}
         >
           {activeConvId ? (
             <>
               {/* Chat Header */}
-              <div className="p-4 bg-white border-b border-slate-200 flex items-center justify-between shadow-xs">
+              <div className="p-4 bg-white border-b border-slate-200/80 flex items-center justify-between shadow-xs">
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => setActiveConvId(null)}
@@ -217,16 +215,12 @@ export default function MessagesPage() {
                   >
                     <ArrowLeft className="w-5 h-5" />
                   </button>
-                  <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-sm overflow-hidden">
-                    {otherUser?.avatar_url || otherUser?.avatarUrl ? (
-                      <img
-                        src={otherUser.avatar_url || otherUser.avatarUrl}
-                        alt=""
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      otherUser?.full_name?.[0] || 'A'
-                    )}
+                  <div className="w-10 h-10 rounded-full overflow-hidden border border-emerald-200/80 bg-emerald-50 shrink-0">
+                    <img
+                      src={otherUser?.avatar_url || otherUser?.avatarUrl || '/avatars/avatar-farmer-w.webp'}
+                      alt=""
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                   <div>
                     <h3 className="text-sm font-bold text-slate-900">
@@ -235,7 +229,7 @@ export default function MessagesPage() {
                     {activeConv?.offer && (
                       <Link
                         href={`/offres/${activeConv.offer.id}`}
-                        className="text-xs text-emerald-700 hover:underline flex items-center gap-1"
+                        className="text-xs text-emerald-700 hover:underline flex items-center gap-1 font-medium"
                       >
                         <span>{activeConv.offer.title}</span>
                         <ExternalLink className="w-3 h-3" />
@@ -243,18 +237,17 @@ export default function MessagesPage() {
                     )}
                   </div>
                 </div>
-
               </div>
 
               {/* Message Feed */}
-              <div className="flex-1 p-4 overflow-y-auto space-y-3">
+              <div className="flex-1 p-5 overflow-y-auto space-y-3.5">
                 {loadingMsgs ? (
                   <div className="text-center text-xs text-slate-400 pt-8">
                     Chargement des messages...
                   </div>
                 ) : messages.length === 0 ? (
                   <div className="text-center text-xs text-slate-400 pt-8">
-                    Aucun message dans cette discussion.
+                    Aucun message dans cette discussion. Envoyez votre première proposition !
                   </div>
                 ) : (
                   messages.map((m) => {
@@ -265,15 +258,15 @@ export default function MessagesPage() {
                         className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}
                       >
                         <div
-                          className={`max-w-[80%] sm:max-w-[70%] px-4 py-2.5 rounded-2xl text-xs sm:text-sm leading-relaxed ${
+                          className={`max-w-[82%] sm:max-w-[70%] px-4 py-3 rounded-2xl text-xs sm:text-sm leading-relaxed ${
                             isMe
-                              ? 'bg-emerald-700 text-white rounded-br-xs shadow-xs'
-                              : 'bg-white text-slate-800 border border-slate-200 rounded-bl-xs shadow-xs'
+                              ? 'bg-gradient-to-r from-emerald-700 to-emerald-800 text-white rounded-br-xs shadow-xs'
+                              : 'bg-white text-slate-800 border border-slate-200/80 rounded-bl-xs shadow-xs'
                           }`}
                         >
                           <p>{m.content}</p>
                         </div>
-                        <span className="text-[10px] text-slate-400 px-1 mt-0.5">
+                        <span className="text-[10px] text-slate-400 px-1 mt-1">
                           {m.created_at || m.createdAt
                             ? new Date(m.created_at || m.createdAt).toLocaleTimeString('fr-FR', {
                                 hour: '2-digit',
@@ -288,18 +281,18 @@ export default function MessagesPage() {
               </div>
 
               {/* Message Input */}
-              <form onSubmit={handleSendMessage} className="p-3 bg-white border-t border-slate-200 flex gap-2">
+              <form onSubmit={handleSendMessage} className="p-3.5 bg-white border-t border-slate-200/80 flex gap-2.5">
                 <input
                   type="text"
                   placeholder="Écrivez votre message..."
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
-                  className="flex-1 px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white"
+                  className="flex-1 px-4 py-3 bg-slate-50 border border-slate-200/80 rounded-2xl text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white transition"
                 />
                 <button
                   type="submit"
                   disabled={sending || !newMessage.trim()}
-                  className="px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition shrink-0"
+                  className="px-5 py-3 bg-gradient-to-r from-emerald-700 to-emerald-800 hover:from-emerald-800 hover:to-emerald-900 disabled:opacity-50 text-white font-bold rounded-2xl text-xs flex items-center justify-center gap-2 transition shadow-xs shrink-0 cursor-pointer"
                 >
                   <Send className="w-4 h-4" />
                   <span className="hidden sm:inline">Envoyer</span>
@@ -307,10 +300,14 @@ export default function MessagesPage() {
               </form>
             </>
           ) : (
-            <div className="text-center space-y-2 p-8 text-slate-400">
-              <MessageSquare className="w-12 h-12 text-slate-300 mx-auto" />
-              <p className="text-sm font-semibold text-slate-600">Sélectionnez une discussion</p>
-              <p className="text-xs">Choisissez une conversation à gauche pour afficher les messages.</p>
+            <div className="text-center space-y-3 p-10 text-slate-400">
+              <div className="w-16 h-16 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center mx-auto">
+                <MessageSquare className="w-8 h-8" />
+              </div>
+              <p className="text-base font-bold text-slate-700">Sélectionnez une discussion</p>
+              <p className="text-xs max-w-sm mx-auto">
+                Choisissez une conversation dans la liste de gauche pour négocier directement vos échanges.
+              </p>
             </div>
           )}
         </div>

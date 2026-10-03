@@ -255,9 +255,9 @@ export default function LoginModal() {
               <Phone className="w-8 h-8" />
             </div>
 
-            <h2 className="text-2xl font-black text-slate-900 mb-1">Connexion WhatsApp</h2>
+            <h2 className="text-2xl font-black text-slate-900 mb-1">Connexion Sécurisée</h2>
             <p className="text-slate-500 text-xs sm:text-sm mb-6 leading-relaxed">
-              Entrez votre numéro sénégalais pour recevoir un code d'authentification par WhatsApp.
+              Entrez votre numéro sénégalais pour recevoir un code d'authentification instantané.
             </p>
 
             <div className="space-y-3 mb-5">
@@ -267,27 +267,27 @@ export default function LoginModal() {
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="+221 7X XXX XX XX"
-                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-3.5 px-4 text-slate-900 text-center text-lg font-bold outline-none focus:border-emerald-600 focus:bg-white transition"
+                  className="w-full bg-slate-50 border-2 border-slate-200/80 rounded-2xl py-3.5 px-4 text-slate-900 text-center text-lg font-bold outline-none focus:border-emerald-600 focus:bg-white transition"
                   onKeyDown={(e) => e.key === 'Enter' && handleSendOtp()}
                   autoFocus
                 />
               </div>
               <p className="text-[11px] text-slate-400">
-                Format sénégalais : Orange (77, 78), Free (76), Expresso (70), Promobile (75)
+                Orange (77, 78), Free (76), Expresso (70), Promobile (75)
               </p>
             </div>
 
             <button
               onClick={handleSendOtp}
               disabled={loading}
-              className="w-full bg-emerald-700 hover:bg-emerald-800 disabled:opacity-60 text-white py-3.5 rounded-xl font-bold text-sm shadow-md transition flex items-center justify-center gap-2 mb-2.5"
+              className="w-full bg-gradient-to-r from-emerald-700 to-emerald-800 hover:from-emerald-800 hover:to-emerald-900 disabled:opacity-60 text-white py-3.5 rounded-2xl font-bold text-sm shadow-[0_4px_14px_rgba(5,96,58,0.25)] transition flex items-center justify-center gap-2 mb-2.5 cursor-pointer"
             >
               {loading ? (
                 <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
                 <>
                   <MessageSquare className="w-4 h-4" />
-                  <span>Recevoir le code WhatsApp</span>
+                  <span>Recevoir le code d'accès</span>
                 </>
               )}
             </button>
