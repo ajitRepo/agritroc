@@ -74,7 +74,7 @@ export default function MessagesPage() {
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      router.push('/connexion')
+      router.replace('/connexion?next=/messages')
       return
     }
     if (isAuthenticated) {

@@ -1,29 +1,22 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/context/AuthContext'
-import {
-  User,
-  MapPin,
-  Phone,
-  ShieldCheck,
-  Star,
-  CheckCircle2,
-  Calendar,
-  Layers,
-  ArrowRight,
-  Upload,
-  Camera,
-  Trash2,
-  Sparkles,
-} from 'lucide-react'
-import { SENEGAL_REGIONS } from '@/lib/constants'
+import { useToast } from '@/components/Toast'
+import { Camera, ChevronRight, Layers, LogOut, Eye, Loader2, AlertCircle, Star } from 'lucide-react'
+import { SENEGAL_REGIONS, IMAGE_ACCEPT } from '@/lib/constants'
 import { AVATAR_PRESETS } from '@/lib/avatars'
+
+const inputClass =
+  'w-full h-12 px-4 bg-surface border border-line rounded-button text-base text-ink placeholder:text-ink-subtle focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition'
+const labelClass = 'block text-[15px] font-semibold text-ink mb-1.5'
 
 export default function ProfilPage() {
   const router = useRouter()
-  const { user, isAuthenticated, isLoading, refreshUser } = useAuth()
+  const { user, isAuthenticated, isLoading, refreshUser, logout } = useAuth()
+  const { showToast } = useToast()
 
   const [fullName, setFullName] = useState('')
   const [city, setCity] = useState('')
@@ -32,66 +25,71 @@ export default function ProfilPage() {
   const [bio, setBio] = useState('')
   const [saving, setSaving] = useState(false)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
-  const [success, setSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const fileInputRef = React.useRef<HTMLInputElement | null>(null)
+  const [nameError, setNameError] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const loggingOut = useRef(false)
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated && !loggingOut.current) {
+      router.replace('/connexion?next=/profil')
+    }
+  }, [isLoading, isAuthenticated, router])
+
+  // Remplit le formulaire quand le profil arrive ou change (après enregistrement)
+  const [loadedFrom, setLoadedFrom] = useState<typeof user>(null)
+  if (user && user !== loadedFrom) {
+    setLoadedFrom(user)
+    setFullName(user.fullName || user.full_name || '')
+    setCity(user.city || '')
+    setAddress(user.address || '')
+    setAvatarUrl(user.avatarUrl || user.avatar_url || '')
+    setBio(user.bio || '')
+  }
+
+  const isDirty =
+    !!user &&
+    (fullName !== (user.fullName || user.full_name || '') ||
+      city !== (user.city || '') ||
+      address !== (user.address || '') ||
+      avatarUrl !== (user.avatarUrl || user.avatar_url || '') ||
+      bio !== (user.bio || ''))
 
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
+    e.target.value = ''
     if (!file) return
-
     setUploadingAvatar(true)
-    setError(null)
-
     try {
       const formData = new FormData()
       formData.append('file', file)
       formData.append('kind', 'avatar')
-
       const res = await fetch('/api/upload', {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('agri_token') || ''}`,
-        },
+        headers: { Authorization: `Bearer ${localStorage.getItem('agri_token') || ''}` },
         body: formData,
       })
-
       const data = await res.json()
       if (res.ok && data.url) {
         setAvatarUrl(data.url)
-      } else {
-        setError(data.error || 'Erreur lors du téléversement de la photo')
-      }
+        showToast('Photo ajoutée. Appuyez sur « Enregistrer ».', 'info')
+      } else showToast(data.error || "La photo n'a pas pu être envoyée.", 'error')
     } catch {
-      setError('Erreur réseau lors du téléversement')
+      showToast('Connexion impossible. Réessayez.', 'error')
     } finally {
       setUploadingAvatar(false)
-      if (fileInputRef.current) {
-        fileInputRef.current.value = ''
-      }
     }
   }
 
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      router.push('/connexion')
-      return
-    }
-    if (user) {
-      setFullName(user.fullName || user.full_name || '')
-      setCity(user.city || 'Kaolack')
-      setAddress(user.address || '')
-      setAvatarUrl(user.avatarUrl || user.avatar_url || '')
-      setBio(user.bio || '')
-    }
-  }, [isLoading, isAuthenticated, user, router])
-
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (fullName.trim().length < 2) {
+      setNameError('Indiquez votre nom ou celui de votre exploitation.')
+      document.getElementById('profil-name')?.focus()
+      return
+    }
     setSaving(true)
     setError(null)
-    setSuccess(false)
-
     try {
       const res = await fetch('/api/profile', {
         method: 'PUT',
@@ -100,253 +98,263 @@ export default function ProfilPage() {
           Authorization: `Bearer ${localStorage.getItem('agri_token') || ''}`,
         },
         body: JSON.stringify({
-          fullName,
-          city,
-          address,
+          fullName: fullName.trim(),
+          city: city || null,
+          address: address.trim() || null,
           avatarUrl: avatarUrl || null,
-          bio: bio || null,
+          bio: bio.trim() || null,
         }),
       })
-
       if (res.ok) {
-        setSuccess(true)
         await refreshUser()
+        showToast('Profil enregistré')
       } else {
-        const data = await res.json()
-        setError(data.error || 'Erreur lors de la mise à jour')
+        const data = await res.json().catch(() => null)
+        setError(data?.error || "Vos modifications n'ont pas pu être enregistrées. Réessayez.")
       }
-    } catch (err) {
-      setError('Erreur de connexion')
+    } catch {
+      setError('Connexion impossible. Vérifiez votre réseau puis réessayez.')
     } finally {
       setSaving(false)
     }
   }
 
-  if (isLoading) {
-    return <div className="p-16 text-center text-slate-500 font-medium">Chargement du profil...</div>
+  if (isLoading || !user) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-6 space-y-4" aria-busy>
+        <div className="h-28 rounded-card skeleton" />
+        <div className="h-20 rounded-card skeleton" />
+        <div className="h-72 rounded-card skeleton" />
+      </div>
+    )
   }
 
+  const activeCount = user.activeOffersCount || user.active_offers_count || 0
+  const exchangeCount = user.exchangeCount || user.exchange_count || 0
+  const rating = user.ratingAvg || user.rating_avg || 0
+  // Une ancienne valeur hors liste ne doit pas disparaître du menu
+  const regionOptions: string[] = city && !(SENEGAL_REGIONS as readonly string[]).includes(city) ? [city, ...SENEGAL_REGIONS] : [...SENEGAL_REGIONS]
+
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
-      {/* Header Profile Summary */}
-      <div className="bg-white p-6 sm:p-10 rounded-3xl border border-slate-200/80 shadow-[0_4px_25px_rgba(0,0,0,0.04)] flex flex-col sm:flex-row items-center gap-7">
-        <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden border-2 border-emerald-300 bg-emerald-50 shrink-0 shadow-sm relative group">
-          {avatarUrl ? (
-            <img src={avatarUrl} alt="" className="w-full h-full object-cover" />
-          ) : (
-            <span className="w-full h-full flex items-center justify-center font-black text-3xl text-emerald-800">
-              {fullName?.[0] || 'U'}
+    <div className="max-w-2xl mx-auto px-4 sm:px-6 py-5 sm:py-10 space-y-4">
+      {/* Résumé */}
+      <section className="bg-surface rounded-card border border-line p-4 sm:p-6">
+        <div className="flex items-center gap-4">
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploadingAvatar}
+            aria-label="Changer la photo de profil"
+            className="relative w-20 h-20 shrink-0 rounded-full overflow-hidden bg-primary-soft cursor-pointer group"
+          >
+            {avatarUrl ? (
+              <img src={avatarUrl} alt="" className="w-full h-full object-cover" />
+            ) : (
+              <span className="w-full h-full flex items-center justify-center text-2xl font-bold text-primary">
+                {(fullName[0] || 'U').toUpperCase()}
+              </span>
+            )}
+            <span className="absolute inset-x-0 bottom-0 h-7 bg-black/50 flex items-center justify-center">
+              {uploadingAvatar ? (
+                <Loader2 className="w-4 h-4 text-white animate-spin" aria-hidden />
+              ) : (
+                <Camera className="w-4 h-4 text-white" aria-hidden />
+              )}
             </span>
+          </button>
+          <div className="min-w-0">
+            <h1 className="text-xl sm:text-2xl font-bold text-ink truncate">{fullName || 'Mon profil'}</h1>
+            <p className="text-ink-muted">{user.phone}</p>
+            {user.city && <p className="text-sm text-ink-subtle">{user.city}</p>}
+          </div>
+        </div>
+
+        <dl className="mt-4 grid grid-cols-3 gap-2 text-center">
+          <div className="rounded-button bg-surface-secondary py-2.5">
+            <dt className="text-xs text-ink-muted">Annonces</dt>
+            <dd className="text-lg font-bold text-ink">{activeCount}</dd>
+          </div>
+          <div className="rounded-button bg-surface-secondary py-2.5">
+            <dt className="text-xs text-ink-muted">Trocs conclus</dt>
+            <dd className="text-lg font-bold text-ink">{exchangeCount}</dd>
+          </div>
+          <div className="rounded-button bg-surface-secondary py-2.5">
+            <dt className="text-xs text-ink-muted">Note</dt>
+            <dd className="text-lg font-bold text-ink flex items-center justify-center gap-1">
+              {rating > 0 ? (
+                <>
+                  <Star className="w-4 h-4 fill-ochre text-ochre" aria-hidden />
+                  {rating.toFixed(1)}
+                </>
+              ) : (
+                <span className="text-sm font-medium text-ink-subtle">—</span>
+              )}
+            </dd>
+          </div>
+        </dl>
+      </section>
+
+      {/* Raccourcis */}
+      <nav className="bg-surface rounded-card border border-line divide-y divide-line overflow-hidden" aria-label="Mon compte">
+        <Link href="/mes-offres" className="flex items-center gap-3 px-4 h-14 hover:bg-surface-secondary">
+          <Layers className="w-5 h-5 text-primary" aria-hidden />
+          <span className="flex-1 font-medium text-ink">Mes annonces</span>
+          <ChevronRight className="w-5 h-5 text-ink-subtle" aria-hidden />
+        </Link>
+        <Link href={`/profil/${user.id}`} className="flex items-center gap-3 px-4 h-14 hover:bg-surface-secondary">
+          <Eye className="w-5 h-5 text-primary" aria-hidden />
+          <span className="flex-1 font-medium text-ink">Voir mon profil public</span>
+          <ChevronRight className="w-5 h-5 text-ink-subtle" aria-hidden />
+        </Link>
+      </nav>
+
+      {/* Modifier */}
+      <form onSubmit={handleUpdate} noValidate className="bg-surface rounded-card border border-line p-4 sm:p-6 space-y-5">
+        <div>
+          <h2 className="text-lg font-bold text-ink">Mes informations</h2>
+          <p className="text-sm text-ink-muted">Visibles par les personnes qui consultent vos annonces.</p>
+        </div>
+
+        <div>
+          <label htmlFor="profil-name" className={labelClass}>
+            Nom ou exploitation
+          </label>
+          <input
+            id="profil-name"
+            type="text"
+            autoComplete="name"
+            maxLength={60}
+            value={fullName}
+            onChange={(e) => {
+              setFullName(e.target.value)
+              setNameError(null)
+            }}
+            aria-invalid={!!nameError}
+            className={`${inputClass} ${nameError ? 'border-error' : ''}`}
+          />
+          {nameError && (
+            <p className="mt-1.5 flex items-center gap-1.5 text-sm text-error">
+              <AlertCircle className="w-4 h-4" aria-hidden />
+              {nameError}
+            </p>
           )}
         </div>
 
-        <div className="flex-1 text-center sm:text-left space-y-2">
-          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5">
-            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-              {fullName || 'Agriculteur membre'}
-            </h1>
-            <span className="px-3 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200/80 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-xs">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Compte vérifié</span>
-            </span>
+        <div className="grid sm:grid-cols-2 gap-5">
+          <div>
+            <label htmlFor="profil-region" className={labelClass}>
+              Région
+            </label>
+            <select
+              id="profil-region"
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              className={`${inputClass} cursor-pointer ${city ? '' : 'text-ink-subtle'}`}
+            >
+              <option value="">Choisissez votre région</option>
+              {regionOptions.map((r) => (
+                <option key={r} value={r}>
+                  {r}
+                </option>
+              ))}
+            </select>
           </div>
-
-          <p className="text-xs sm:text-sm text-slate-500 flex items-center justify-center sm:justify-start gap-1 font-mono font-medium">
-            <Phone className="w-3.5 h-3.5 text-emerald-600" />
-            <span>{user?.phone}</span>
-          </p>
-
-          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-5 pt-3 text-xs text-slate-600 border-t border-slate-100">
-            <span className="flex items-center gap-1.5 font-medium">
-              <Layers className="w-4 h-4 text-emerald-700" />
-              <strong className="text-slate-900">{user?.activeOffersCount || user?.active_offers_count || 0}</strong> annonces actives
-            </span>
-            <span className="flex items-center gap-1.5 font-medium">
-              <CheckCircle2 className="w-4 h-4 text-emerald-700" />
-              <strong className="text-slate-900">{user?.exchangeCount || user?.exchange_count || 0}</strong> trocs conclus
-            </span>
-            {(user?.ratingAvg || user?.rating_avg || 0) > 0 && (
-              <span className="flex items-center gap-1.5 text-amber-700 font-medium">
-                <Star className="w-4 h-4 fill-amber-500 text-amber-500" />
-                <strong className="text-amber-900">{(user?.ratingAvg || user?.rating_avg)?.toFixed(1)}</strong> / 5
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Edit Form */}
-      <div className="bg-white p-6 sm:p-10 rounded-3xl border border-slate-200/80 shadow-[0_4px_25px_rgba(0,0,0,0.04)] space-y-6">
-        <div className="space-y-1">
-          <h2 className="text-xl font-black text-slate-900 tracking-tight">Paramètres du profil</h2>
-          <p className="text-xs sm:text-sm text-slate-500">
-            Mettez à jour vos informations visibles par les autres exploitants sur AgriTroc.
-          </p>
-        </div>
-
-        {success && (
-          <div className="p-4 rounded-2xl bg-emerald-50 text-emerald-800 text-xs font-semibold flex items-center gap-2.5 animate-in fade-in">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-            <span>Profil mis à jour avec succès !</span>
-          </div>
-        )}
-
-        {error && (
-          <div className="p-4 rounded-2xl bg-red-50 text-red-700 text-xs font-semibold animate-in fade-in">
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleUpdate} className="space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="space-y-1.5">
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-                Nom complet ou Nom d'exploitation
-              </label>
-              <input
-                type="text"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                className="w-full px-4 py-3 bg-slate-50 border border-slate-200/80 rounded-2xl text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white transition"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-                Région principale
-              </label>
-              <select
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                className="w-full px-4 py-3 bg-slate-50 border border-slate-200/80 rounded-2xl text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white transition cursor-pointer"
-              >
-                {SENEGAL_REGIONS.map((r) => (
-                  <option key={r} value={r}>
-                    {r}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div className="space-y-1.5">
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-              Adresse ou Commune exacte
+          <div>
+            <label htmlFor="profil-address" className={labelClass}>
+              Commune ou village <span className="font-normal text-ink-subtle">(facultatif)</span>
             </label>
             <input
+              id="profil-address"
               type="text"
-              placeholder="ex: Commune de Ndoffane, Bassin arachidier"
+              placeholder="Ex. : Ndoffane"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200/80 rounded-2xl text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white transition"
+              className={inputClass}
             />
           </div>
+        </div>
 
-          <div className="space-y-4 p-5 bg-slate-50/80 border border-slate-200/80 rounded-3xl">
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-              Photo de profil & Avatar 3D
-            </label>
-
-            {/* Current preview + upload actions */}
-            <div className="flex flex-col sm:flex-row items-center gap-5">
-              <div className="w-20 h-20 rounded-full bg-emerald-50 text-emerald-800 flex items-center justify-center font-black text-2xl shrink-0 overflow-hidden border-2 border-emerald-300 shadow-sm relative group">
-                {avatarUrl ? (
-                  <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
-                ) : (
-                  fullName?.[0]?.toUpperCase() || 'U'
-                )}
-                {uploadingAvatar && (
-                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                    <span className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  </div>
-                )}
-              </div>
-
-              <div className="flex-1 space-y-2 text-center sm:text-left">
-                <div className="flex flex-wrap gap-2.5 justify-center sm:justify-start">
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/png,image/jpeg,image/webp,image/gif"
-                    onChange={handleAvatarUpload}
-                    className="hidden"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={uploadingAvatar}
-                    className="px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white rounded-xl text-xs font-bold flex items-center gap-2 shadow-xs transition cursor-pointer"
-                  >
-                    <Upload className="w-3.5 h-3.5" />
-                    <span>{uploadingAvatar ? 'Téléversement...' : 'Importer une photo'}</span>
-                  </button>
-
-                  {avatarUrl && (
-                    <button
-                      type="button"
-                      onClick={() => setAvatarUrl('')}
-                      className="px-4 py-2.5 bg-white hover:bg-red-50 text-red-600 border border-red-200 rounded-xl text-xs font-bold flex items-center gap-1.5 transition cursor-pointer"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                      <span>Retirer</span>
-                    </button>
-                  )}
-                </div>
-                <p className="text-[11px] text-slate-400 font-medium">
-                  Formats acceptés : PNG, JPG, WebP. Taille maximale : 5 Mo.
-                </p>
-              </div>
-            </div>
-
-            {/* Presets Grid */}
-            <div className="pt-3 border-t border-slate-200/80">
-              <span className="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-2.5">
-                Ou choisissez un avatar agricole 3D moderne :
-              </span>
-              <div className="grid grid-cols-4 sm:grid-cols-8 gap-2.5">
-                {AVATAR_PRESETS.map((preset) => (
-                  <button
-                    key={preset.id}
-                    type="button"
-                    onClick={() => setAvatarUrl(preset.url)}
-                    className={`flex flex-col items-center p-2 rounded-2xl border-2 transition-all cursor-pointer ${
-                      avatarUrl === preset.url
-                        ? 'border-emerald-600 bg-emerald-50 scale-105 shadow-xs'
-                        : 'border-transparent bg-white hover:bg-slate-100 hover:border-slate-300'
-                    }`}
-                  >
-                    <img src={preset.url} alt={preset.label} className="w-10 h-10 rounded-full object-cover" />
-                    <span className="text-[10px] text-slate-700 font-bold mt-1.5 truncate max-w-full text-center">
-                      {preset.label}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
+        <div>
+          <p className={labelClass}>Photo de profil</p>
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar -mx-1 px-1 py-1">
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploadingAvatar}
+              aria-label="Importer une photo"
+              className="w-12 h-12 shrink-0 rounded-full border-2 border-dashed border-primary/40 bg-primary-soft text-primary flex items-center justify-center cursor-pointer"
+            >
+              {uploadingAvatar ? <Loader2 className="w-5 h-5 animate-spin" aria-hidden /> : <Camera className="w-5 h-5" aria-hidden />}
+            </button>
+            {AVATAR_PRESETS.map((preset) => (
+              <button
+                key={preset.id}
+                type="button"
+                onClick={() => setAvatarUrl(preset.url)}
+                aria-label={preset.label}
+                aria-pressed={avatarUrl === preset.url}
+                className={`w-12 h-12 shrink-0 rounded-full overflow-hidden ring-offset-2 transition cursor-pointer ${
+                  avatarUrl === preset.url ? 'ring-2 ring-primary' : 'opacity-80 hover:opacity-100'
+                }`}
+              >
+                <img src={preset.url} alt="" className="w-full h-full object-cover" />
+              </button>
+            ))}
           </div>
+          {avatarUrl && (
+            <button
+              type="button"
+              onClick={() => setAvatarUrl('')}
+              className="mt-1 h-9 text-sm font-medium text-ink-muted hover:text-error cursor-pointer"
+            >
+              Retirer la photo
+            </button>
+          )}
+          <input ref={fileInputRef} type="file" accept={IMAGE_ACCEPT} onChange={handleAvatarUpload} className="sr-only" tabIndex={-1} />
+        </div>
 
-          <div className="space-y-1.5">
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-              Présentation / Bio
-            </label>
-            <textarea
-              rows={3}
-              placeholder="Décrivez vos cultures, vos élevages ou votre activité agricole..."
-              value={bio}
-              onChange={(e) => setBio(e.target.value)}
-              className="w-full p-4 bg-slate-50 border border-slate-200/80 rounded-2xl text-sm font-medium resize-none focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white transition"
-            ></textarea>
-          </div>
+        <div>
+          <label htmlFor="profil-bio" className={labelClass}>
+            Présentation <span className="font-normal text-ink-subtle">(facultatif)</span>
+          </label>
+          <textarea
+            id="profil-bio"
+            rows={3}
+            placeholder="Vos cultures, votre élevage, votre activité…"
+            value={bio}
+            onChange={(e) => setBio(e.target.value)}
+            className="w-full p-4 bg-surface border border-line rounded-button text-base text-ink placeholder:text-ink-subtle focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-y"
+          />
+        </div>
 
-          <button
-            type="submit"
-            disabled={saving}
-            className="w-full py-4 bg-gradient-to-r from-emerald-700 to-emerald-800 hover:from-emerald-800 hover:to-emerald-900 disabled:opacity-60 text-white font-bold rounded-2xl text-sm shadow-[0_4px_16px_rgba(5,96,58,0.25)] transition-all transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
-          >
-            {saving ? 'Enregistrement en cours...' : 'Enregistrer les modifications'}
-          </button>
-        </form>
-      </div>
+        {error && (
+          <p role="alert" className="p-3 rounded-button bg-red-50 border border-red-200 text-error text-sm flex items-start gap-2">
+            <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" aria-hidden />
+            {error}
+          </p>
+        )}
+
+        <button
+          type="submit"
+          disabled={saving || uploadingAvatar || !isDirty}
+          className="w-full h-12 bg-primary hover:bg-primary-dark disabled:bg-surface-secondary disabled:text-ink-subtle text-white font-semibold rounded-button text-base transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:cursor-default"
+        >
+          {saving && <Loader2 className="w-5 h-5 animate-spin" aria-hidden />}
+          {saving ? 'Enregistrement…' : isDirty ? 'Enregistrer' : 'Aucune modification'}
+        </button>
+      </form>
+
+      <button
+        onClick={async () => {
+          loggingOut.current = true
+          await logout()
+          router.replace('/')
+        }}
+        className="w-full h-12 flex items-center justify-center gap-2 rounded-button text-error font-semibold hover:bg-red-50 cursor-pointer"
+      >
+        <LogOut className="w-5 h-5" aria-hidden />
+        Se déconnecter
+      </button>
     </div>
   )
 }

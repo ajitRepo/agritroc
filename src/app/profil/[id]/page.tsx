@@ -1,24 +1,32 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
-import {
-  MapPin,
-  ShieldCheck,
-  Star,
-  CheckCircle2,
-  Layers,
-  ArrowLeft,
-} from 'lucide-react'
+import { MapPin, Star, ArrowLeft } from 'lucide-react'
 import type { Offer } from '@/lib/types'
-import OfferCard, { OfferGrid } from '@/components/OfferCard'
+import OfferCard, { OfferGrid, OfferGridSkeleton } from '@/components/OfferCard'
+
+interface PublicProfile {
+  full_name?: string | null
+  avatar_url?: string | null
+  avatarUrl?: string | null
+  city?: string | null
+  address?: string | null
+  bio?: string | null
+  created_at?: string
+  active_offers_count?: number
+  exchange_count?: number
+  rating_avg: number
+  offers?: Offer[]
+}
 
 export default function PublicProfilePage() {
   const params = useParams()
+  const router = useRouter()
   const userId = params.id as string
 
-  const [profile, setProfile] = useState<any>(null)
+  const [profile, setProfile] = useState<PublicProfile | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -39,85 +47,86 @@ export default function PublicProfilePage() {
   }, [userId])
 
   if (loading) {
-    return <div className="p-16 text-center text-slate-500 font-medium">Chargement du profil...</div>
+    return (
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6" aria-busy>
+        <div className="h-36 rounded-card skeleton" />
+        <OfferGridSkeleton count={4} />
+      </div>
+    )
   }
 
   if (!profile) {
     return (
-      <div className="max-w-md mx-auto px-4 py-20 text-center space-y-4">
-        <div className="w-16 h-16 rounded-full bg-emerald-50 text-emerald-800 flex items-center justify-center mx-auto text-3xl">
+      <div className="max-w-md mx-auto px-4 py-16 text-center space-y-3">
+        <p className="text-4xl" aria-hidden>
           🌾
-        </div>
-        <h2 className="text-xl font-bold text-slate-800">Profil introuvable</h2>
-        <Link href="/offres" className="inline-block px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl text-xs transition">
-          Retour aux offres
+        </p>
+        <h1 className="text-xl font-bold text-ink">Ce profil est introuvable.</h1>
+        <p className="text-sm text-ink-muted">Le compte a peut-être été supprimé.</p>
+        <Link
+          href="/offres"
+          className="inline-flex items-center justify-center h-11 px-5 rounded-button bg-primary text-white font-semibold text-sm"
+        >
+          Voir les annonces
         </Link>
       </div>
     )
   }
 
   const userAvatar = profile.avatar_url || profile.avatarUrl || '/avatars/avatar-farmer-w.webp'
+  const memberSince = profile.created_at
+    ? new Date(profile.created_at).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })
+    : null
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
-      <div>
-        <Link
-          href="/offres"
-          className="inline-flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-emerald-800 transition"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Retour à la bourse d'échange</span>
-        </Link>
-      </div>
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-8 space-y-6">
+      <button
+        onClick={() => (window.history.length > 1 ? router.back() : router.push('/offres'))}
+        className="inline-flex items-center gap-1.5 h-10 -ml-2 px-2 rounded-control text-sm font-semibold text-ink-muted hover:text-ink cursor-pointer"
+      >
+        <ArrowLeft className="w-5 h-5" aria-hidden />
+        Retour
+      </button>
 
-      {/* User Header Profile Card */}
-      <div className="bg-white p-6 sm:p-10 rounded-3xl border border-slate-200/80 shadow-[0_4px_25px_rgba(0,0,0,0.04)] flex flex-col sm:flex-row items-center gap-7">
-        <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden border-2 border-emerald-300 bg-emerald-50 shrink-0 shadow-sm">
-          <img
-            src={userAvatar}
-            alt=""
-            className="w-full h-full object-cover"
-          />
-        </div>
-
-        <div className="flex-1 text-center sm:text-left space-y-2.5">
-          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5">
-            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-              {profile.full_name || 'Agriculteur membre'}
-            </h1>
-            <span className="px-3 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200/80 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-xs">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Membre vérifié</span>
-            </span>
-          </div>
-
-          <p className="text-xs sm:text-sm text-slate-500 flex items-center justify-center sm:justify-start gap-1 font-medium">
-            <MapPin className="w-4 h-4 text-emerald-600" />
-            <span>{profile.city || profile.address || 'Sénégal'}</span>
-          </p>
-
-          {profile.bio && (
-            <p className="text-sm text-slate-600 max-w-2xl leading-relaxed">{profile.bio}</p>
-          )}
-
-          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-5 pt-3 text-xs text-slate-600 border-t border-slate-100">
-            <span className="flex items-center gap-1.5 font-medium">
-              <Layers className="w-4 h-4 text-emerald-700" />
-              <strong className="text-slate-900">{profile.active_offers_count || 0}</strong> annonces actives
-            </span>
-            <span className="flex items-center gap-1.5 font-medium">
-              <CheckCircle2 className="w-4 h-4 text-emerald-700" />
-              <strong className="text-slate-900">{profile.exchange_count || 0}</strong> trocs conclus
-            </span>
-            {profile.rating_avg > 0 && (
-              <span className="flex items-center gap-1.5 text-amber-700 font-medium">
-                <Star className="w-4 h-4 fill-amber-500 text-amber-500" />
-                <strong className="text-amber-900">{profile.rating_avg.toFixed(1)}</strong> / 5
-              </span>
-            )}
+      <section className="bg-surface rounded-card border border-line p-4 sm:p-6 space-y-4">
+        <div className="flex items-center gap-4">
+          <img src={userAvatar} alt="" className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover bg-primary-soft shrink-0" />
+          <div className="min-w-0 space-y-0.5">
+            <h1 className="text-xl sm:text-2xl font-bold text-ink">{profile.full_name || 'Membre AgriTroc'}</h1>
+            <p className="flex items-center gap-1.5 text-ink-muted">
+              <MapPin className="w-4 h-4 text-primary shrink-0" aria-hidden />
+              <span className="truncate">{[profile.address, profile.city].filter(Boolean).join(', ') || 'Sénégal'}</span>
+            </p>
+            {memberSince && <p className="text-sm text-ink-subtle">Membre depuis {memberSince}</p>}
           </div>
         </div>
-      </div>
+
+        {profile.bio && <p className="text-ink-muted leading-relaxed">{profile.bio}</p>}
+
+        <dl className="grid grid-cols-3 gap-2 text-center max-w-md">
+          <div className="rounded-button bg-surface-secondary py-2.5">
+            <dt className="text-xs text-ink-muted">Annonces</dt>
+            <dd className="text-lg font-bold text-ink">{profile.active_offers_count || 0}</dd>
+          </div>
+          <div className="rounded-button bg-surface-secondary py-2.5">
+            <dt className="text-xs text-ink-muted">Trocs conclus</dt>
+            <dd className="text-lg font-bold text-ink">{profile.exchange_count || 0}</dd>
+          </div>
+          <div className="rounded-button bg-surface-secondary py-2.5">
+            <dt className="text-xs text-ink-muted">Note</dt>
+            <dd className="text-lg font-bold text-ink flex items-center justify-center gap-1">
+              {profile.rating_avg > 0 ? (
+                <>
+                  <Star className="w-4 h-4 fill-ochre text-ochre" aria-hidden />
+                  {profile.rating_avg.toFixed(1)}
+                </>
+              ) : (
+                <span className="text-sm font-medium text-ink-subtle">—</span>
+              )}
+            </dd>
+          </div>
+        </dl>
+      </section>
 
       {/* Annonces actives du membre */}
       <section className="space-y-4">

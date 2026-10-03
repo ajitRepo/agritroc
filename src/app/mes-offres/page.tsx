@@ -19,7 +19,7 @@ export default function MesOffresPage() {
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      router.push('/connexion')
+      router.replace('/connexion?next=/mes-offres')
       return
     }
 

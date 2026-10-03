@@ -63,7 +63,7 @@ export default function PublierPage() {
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      router.push('/connexion')
+      router.replace('/connexion?next=/publier')
     }
   }, [isLoading, isAuthenticated, router])
 
