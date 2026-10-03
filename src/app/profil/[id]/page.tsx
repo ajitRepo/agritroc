@@ -70,7 +70,7 @@ export default function PublicProfilePage() {
 
       {/* User Header */}
       <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-xs flex flex-col sm:flex-row items-center gap-6">
-        <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-black text-3xl shrink-0 overflow-hidden border-2 border-emerald-300">
+        <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-emerald-50 text-emerald-800 flex items-center justify-center font-black text-3xl shrink-0 overflow-hidden border-2 border-emerald-300 shadow-md">
           {profile.avatar_url || profile.avatarUrl ? (
             <img
               src={profile.avatar_url || profile.avatarUrl}

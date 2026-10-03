@@ -318,7 +318,7 @@ export default function OfferDetailPage() {
             </h3>
 
             <div className="flex items-center gap-3.5">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-lg overflow-hidden border border-emerald-200">
+              <div className="w-12 h-12 rounded-full bg-emerald-50 text-emerald-800 flex items-center justify-center font-bold text-lg overflow-hidden border border-emerald-300 shadow-xs">
                 {offer.user?.avatar_url || offer.user?.avatarUrl ? (
                   <img
                     src={offer.user?.avatar_url || offer.user?.avatarUrl}

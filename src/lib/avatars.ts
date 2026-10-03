@@ -5,12 +5,12 @@ export interface AvatarPreset {
 }
 
 export const AVATAR_PRESETS: AvatarPreset[] = [
-  { id: 'farmer-m', label: 'Cultivateur', url: '/avatars/avatar-farmer-m.png' },
-  { id: 'farmer-w', label: 'Cultivatrice', url: '/avatars/avatar-farmer-w.png' },
-  { id: 'sprout', label: 'Jeune pousse', url: '/avatars/avatar-sprout.png' },
-  { id: 'wheat', label: 'Céréalier', url: '/avatars/avatar-wheat.png' },
-  { id: 'tractor', label: 'Machinisme', url: '/avatars/avatar-tractor.png' },
-  { id: 'cow', label: 'Éleveur', url: '/avatars/avatar-cow.png' },
-  { id: 'fruit', label: 'Arboriculteur', url: '/avatars/avatar-fruit.png' },
-  { id: 'peanut', label: 'Arachide', url: '/avatars/avatar-peanut.png' },
+  { id: 'farmer-w', label: 'Agriculteur', url: '/avatars/avatar-farmer-w.webp' },
+  { id: 'sprout', label: 'Jeune pousse', url: '/avatars/avatar-sprout.webp' },
+  { id: 'seedling', label: 'Pépinière', url: '/avatars/avatar-seedling.webp' },
+  { id: 'wheat', label: 'Céréalier', url: '/avatars/avatar-wheat.webp' },
+  { id: 'tractor', label: 'Machinisme', url: '/avatars/avatar-tractor.webp' },
+  { id: 'cow', label: 'Éleveur', url: '/avatars/avatar-cow.webp' },
+  { id: 'fruit', label: 'Arboriculteur', url: '/avatars/avatar-fruit.webp' },
+  { id: 'peanut', label: 'Arachide', url: '/avatars/avatar-peanut.webp' },
 ]

@@ -399,7 +399,7 @@ export default function LoginModal() {
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={uploadingAvatar}
-                className="w-20 h-20 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-black text-2xl overflow-hidden border-2 border-emerald-300 shadow-sm relative group hover:border-emerald-500 transition"
+                className="w-20 h-20 rounded-full bg-emerald-50 text-emerald-800 flex items-center justify-center font-black text-2xl overflow-hidden border-2 border-emerald-300 shadow-sm relative group hover:border-emerald-500 transition"
                 title="Ajouter une photo de profil (optionnel)"
               >
                 {avatarUrl ? (

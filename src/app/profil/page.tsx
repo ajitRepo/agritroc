@@ -130,7 +130,7 @@ export default function ProfilPage() {
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
       {/* Header Profile Summary */}
       <div className="bg-white p-6 sm:p-8 rounded-3xl border border-emerald-100 shadow-xs flex flex-col sm:flex-row items-center gap-6">
-        <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-black text-3xl shrink-0 overflow-hidden border-2 border-emerald-300 shadow-xs">
+        <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-emerald-50 text-emerald-800 flex items-center justify-center font-black text-3xl shrink-0 overflow-hidden border-2 border-emerald-300 shadow-md">
           {avatarUrl ? (
             <img src={avatarUrl} alt="" className="w-full h-full object-cover" />
           ) : (
@@ -242,7 +242,7 @@ export default function ProfilPage() {
 
             {/* Current preview + upload actions */}
             <div className="flex flex-col sm:flex-row items-center gap-4">
-              <div className="w-20 h-20 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-black text-2xl shrink-0 overflow-hidden border-2 border-emerald-300 shadow-xs relative group">
+              <div className="w-20 h-20 rounded-full bg-emerald-50 text-emerald-800 flex items-center justify-center font-black text-2xl shrink-0 overflow-hidden border-2 border-emerald-300 shadow-md relative group">
                 {avatarUrl ? (
                   <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
                 ) : (
