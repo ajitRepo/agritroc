@@ -3,30 +3,16 @@
 import React, { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
 import {
-  User,
   MapPin,
   ShieldCheck,
   Star,
   CheckCircle2,
-  Calendar,
   Layers,
   ArrowLeft,
-  ExternalLink,
-  Sparkles,
-  ArrowRight,
 } from 'lucide-react'
-import { RESOURCE_TYPES } from '@/lib/constants'
-
-const CATEGORY_ICONS: Record<string, string> = {
-  seeds: '/avatars/avatar-seedling.webp',
-  production: '/avatars/avatar-wheat.webp',
-  livestock: '/avatars/avatar-cow.webp',
-  machinery: '/avatars/avatar-tractor.webp',
-  land: '/avatars/avatar-sprout.webp',
-  other: '/avatars/avatar-peanut.webp',
-}
+import type { Offer } from '@/lib/types'
+import OfferCard, { OfferGrid } from '@/components/OfferCard'
 
 export default function PublicProfilePage() {
   const params = useParams()
@@ -133,70 +119,24 @@ export default function PublicProfilePage() {
         </div>
       </div>
 
-      {/* User's Active Offers */}
-      <div className="space-y-6">
-        <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-          Offres de troc proposées ({profile.offers?.length || 0})
+      {/* Annonces actives du membre */}
+      <section className="space-y-4">
+        <h2 className="text-lg sm:text-2xl font-bold text-ink">
+          Annonces en cours ({profile.offers?.length || 0})
         </h2>
 
         {!profile.offers || profile.offers.length === 0 ? (
-          <div className="p-12 bg-white rounded-3xl border border-slate-200/80 text-center text-sm text-slate-500 shadow-xs">
-            Aucune offre active en ce moment pour cet exploitant.
+          <div className="p-8 bg-surface rounded-card border border-line text-center text-sm text-ink-muted">
+            Ce membre n&apos;a pas d&apos;annonce en cours.
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {profile.offers.map((offer: any) => {
-              const resType = RESOURCE_TYPES.find((r) => r.value === offer.resource_type) || {
-                label: offer.resource_type,
-                icon: '📦',
-              }
-              const iconUrl = CATEGORY_ICONS[offer.resource_type] || '/avatars/avatar-sprout.webp'
-
-              return (
-                <Link
-                  key={offer.id}
-                  href={`/offres/${offer.id}`}
-                  className="bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-[0_4px_20px_-4px_rgba(0,0,0,0.04)] hover:shadow-xl transition-all duration-300 flex flex-col group p-6 space-y-4 card-lift"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold px-3 py-1 bg-emerald-50 text-emerald-900 border border-emerald-200/80 rounded-full flex items-center gap-1.5 shadow-xs">
-                      <div className="w-3.5 h-3.5 rounded-full overflow-hidden shrink-0">
-                        <Image src={iconUrl} alt="" width={14} height={14} />
-                      </div>
-                      <span>{resType.label}</span>
-                    </span>
-                    <span className="text-xs text-slate-400 font-medium">{offer.location}</span>
-                  </div>
-
-                  <h3 className="font-bold text-slate-900 text-base line-clamp-2 group-hover:text-emerald-800 transition">
-                    {offer.title}
-                  </h3>
-
-                  <div className="p-3.5 bg-slate-50/90 rounded-2xl border border-slate-200/70 text-xs space-y-2">
-                    <div className="flex items-center gap-2">
-                      <span className="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 font-bold text-[10px] uppercase">
-                        Offre
-                      </span>
-                      <span className="text-slate-800 font-medium truncate">{offer.offered_resource}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 font-bold text-[10px] uppercase">
-                        Cherche
-                      </span>
-                      <span className="text-slate-800 font-medium truncate">{offer.wanted_resource}</span>
-                    </div>
-                  </div>
-
-                  <div className="pt-2 flex items-center justify-between text-xs font-bold text-emerald-700">
-                    <span>Consulter l'annonce</span>
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </Link>
-              )
-            })}
-          </div>
+          <OfferGrid>
+            {profile.offers.map((offer: Offer) => (
+              <OfferCard key={offer.id} offer={offer} />
+            ))}
+          </OfferGrid>
         )}
-      </div>
+      </section>
     </div>
   )
 }

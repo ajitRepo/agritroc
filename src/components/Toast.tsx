@@ -35,7 +35,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     <ToastContext.Provider value={{ showToast }}>
       {children}
       <div
-        className={`fixed bottom-8 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full font-semibold text-sm shadow-xl z-[400] transition-all duration-300 flex items-center gap-2 ${bgStyle} ${
+        role="status"
+        aria-live="polite"
+        className={`fixed bottom-24 md:bottom-8 left-1/2 max-w-[calc(100%-2rem)] -translate-x-1/2 px-6 py-3 rounded-full font-semibold text-sm shadow-xl z-[400] transition-all duration-300 flex items-center gap-2 ${bgStyle} ${
           toast.visible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-4 scale-95 pointer-events-none'
         }`}
       >

@@ -1,10 +1,11 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { AuthProvider } from '@/context/AuthContext'
 import { ToastProvider } from '@/components/Toast'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import LoginModal from '@/components/LoginModal'
+import BottomNav from '@/components/BottomNav'
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://agritroc.com'),
@@ -28,6 +29,11 @@ export const metadata: Metadata = {
   },
 }
 
+export const viewport: Viewport = {
+  themeColor: '#0f6b3e',
+  viewportFit: 'cover',
+}
+
 export default function RootLayout({
   children,
 }: {
@@ -35,12 +41,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr" className="h-full antialiased">
-      <body className="min-h-full flex flex-col bg-[#f8faf5] text-slate-900">
+      <body className="min-h-full flex flex-col bg-background text-ink">
         <AuthProvider>
           <ToastProvider>
             <Navbar />
             <main className="flex-1">{children}</main>
             <Footer />
+            <BottomNav />
             <LoginModal />
           </ToastProvider>
         </AuthProvider>

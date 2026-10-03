@@ -1,153 +1,133 @@
 @import "tailwindcss";
 
+/*
+ * AgriTroc design tokens.
+ * Vert = actions et états actifs uniquement ; le reste respire sur fond crème.
+ * Utilisables en Tailwind : bg-primary, text-ink, text-ink-muted, border-line, rounded-card…
+ */
+@theme {
+  --color-primary: #0f6b3e;
+  --color-primary-dark: #0a4d2c;
+  --color-primary-soft: #e7f2ea;
+
+  --color-background: #faf8f3;
+  --color-surface: #ffffff;
+  --color-surface-secondary: #f3f0e8;
+
+  --color-ink: #17221b;
+  --color-ink-muted: #4e5b53;
+  --color-ink-subtle: #6b7770;
+
+  --color-line: #e5e1d6;
+
+  --color-ochre: #c27c0e;
+  --color-ochre-soft: #fbf1df;
+
+  --color-success: #15803d;
+  --color-warning: #b45309;
+  --color-error: #b91c1c;
+
+  --radius-control: 10px;
+  --radius-button: 12px;
+  --radius-card: 16px;
+  --radius-panel: 20px;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
 :root {
-  --background: #f8faf6;
-  --foreground: #090f0c;
-  --primary: #054f30;
-  --primary-hover: #043f26;
-  --primary-light: #e8f5ee;
-  --primary-accent: #10b981;
-  --amber-accent: #f59e0b;
-  --amber-dark: #b45309;
-  --card-bg: #ffffff;
-  --border-subtle: rgba(9, 15, 12, 0.08);
+  /* Anciennes variables conservées pour compatibilité */
+  --background: var(--color-background);
+  --foreground: var(--color-ink);
+  --primary: var(--color-primary);
 }
 
 body {
-  background-color: var(--background);
-  color: var(--foreground);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-ink);
   min-height: 100vh;
-  letter-spacing: -0.012em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* Custom modern scrollbar */
+/* Focus clavier visible partout, sans gêner le toucher */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #d6d1c4;
   border-radius: 9999px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+.no-scrollbar {
+  scrollbar-width: none;
 }
 
-/* BigTech Background Patterns */
-.bg-grid-pattern {
-  background-size: 32px 32px;
-  background-image: 
-    linear-gradient(to right, rgba(5, 79, 48, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(5, 79, 48, 0.04) 1px, transparent 1px);
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
-.bg-dot-pattern {
-  background-image: radial-gradient(rgba(5, 79, 48, 0.08) 1px, transparent 1px);
-  background-size: 24px 24px;
-}
-
-.bg-grid-dark {
-  background-size: 40px 40px;
-  background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-}
-
-/* Glassmorphism & Elevation */
-.glass-panel {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04);
-}
-
-.glass-panel-dark {
-  background: rgba(2, 38, 26, 0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.card-lift {
-  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.28s ease;
-}
-
-.card-lift:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 35px -10px rgba(5, 79, 48, 0.12), 0 1px 3px 0 rgba(0, 0, 0, 0.05);
-}
-
-/* Keyframes & Animations */
-@keyframes floatSlow {
-  0%, 100% {
-    transform: translateY(0px) rotate(0deg);
-  }
-  50% {
-    transform: translateY(-8px) rotate(0.8deg);
-  }
-}
-
-@keyframes pulseGlow {
-  0%, 100% {
-    opacity: 0.5;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.85;
-    transform: scale(1.04);
-  }
-}
-
-@keyframes shimmer {
+/* Skeleton proche du contenu final */
+@keyframes skeleton {
   0% {
-    background-position: -200% 0;
-  }
-  100% {
     background-position: 200% 0;
   }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
-.animate-float {
-  animation: floatSlow 6s ease-in-out infinite;
-}
-
-.animate-float-delayed {
-  animation: floatSlow 7s ease-in-out 2s infinite;
-}
-
-.animate-glow {
-  animation: pulseGlow 4s ease-in-out infinite;
-}
-
-.shimmer {
-  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
+.skeleton {
+  background: linear-gradient(90deg, #eeeae0 0%, #f6f3ec 50%, #eeeae0 100%);
   background-size: 200% 100%;
-  animation: shimmer 2.5s infinite;
+  animation: skeleton 1.4s ease-in-out infinite;
 }
 
-/* BigTech Gradients & Glow Utilities */
-.glow-primary {
-  box-shadow: 0 0 25px -5px rgba(16, 185, 129, 0.35);
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.glow-amber {
-  box-shadow: 0 0 25px -5px rgba(245, 158, 11, 0.35);
+.animate-fade-up {
+  animation: fadeUp 0.22s ease-out both;
 }
 
-.hairline-border {
-  border: 1px solid rgba(0, 0, 0, 0.06);
+/* Bas d'écran : respecte la barre système des téléphones */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
-.hairline-border-dark {
-  border: 1px solid rgba(255, 255, 255, 0.08);
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Laisse le pied de page visible sous un CTA collant (ex. "Contacter sur WhatsApp") */
+@media (max-width: 1023px) {
+  body:has([data-sticky-cta]) {
+    padding-bottom: 5.5rem;
+  }
 }

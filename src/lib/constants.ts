@@ -52,3 +52,48 @@ export function photoRejectionReason(file: File): string | null {
   }
   return null
 }
+
+// === VISUELS DES CATÉGORIES ===
+export const CATEGORY_ICONS: Record<string, string> = {
+  seeds: '/avatars/avatar-seedling.webp',
+  production: '/avatars/avatar-wheat.webp',
+  livestock: '/avatars/avatar-cow.webp',
+  machinery: '/avatars/avatar-tractor.webp',
+  land: '/avatars/avatar-sprout.webp',
+  other: '/avatars/avatar-peanut.webp',
+}
+
+export function categoryIcon(resourceType?: string): string {
+  return (resourceType && CATEGORY_ICONS[resourceType]) || '/avatars/avatar-sprout.webp'
+}
+
+export function categoryLabel(resourceType?: string): string {
+  return RESOURCE_TYPES.find((r) => r.value === resourceType)?.label || 'Autre ressource'
+}
+
+// "il y a 3 jours" — plus parlant qu'une date complète sur une carte
+export function timeAgo(date?: string | Date | null): string {
+  if (!date) return ''
+  const diff = Date.now() - new Date(date).getTime()
+  const minutes = Math.floor(diff / 60000)
+  if (minutes < 60) return minutes <= 1 ? "À l'instant" : `Il y a ${minutes} min`
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24) return `Il y a ${hours} h`
+  const days = Math.floor(hours / 24)
+  if (days === 1) return 'Hier'
+  if (days < 30) return `Il y a ${days} jours`
+  return new Date(date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
+}
+
+// Lien WhatsApp vers un numéro sénégalais, avec message pré-rempli
+export function whatsAppUrl(phone?: string, title?: string): string {
+  if (!phone) return '#'
+  let clean = phone.replace(/[^0-9]/g, '')
+  if (clean.startsWith('00221')) {
+    clean = clean.substring(2)
+  } else if (!clean.startsWith('221') && clean.length === 9) {
+    clean = '221' + clean
+  }
+  const text = `Salam Alaykoum, je vous contacte depuis AgriTroc concernant votre annonce de troc : "${title || ''}". Je souhaite échanger avec vous.`
+  return `https://wa.me/${clean}?text=${encodeURIComponent(text)}`
+}
