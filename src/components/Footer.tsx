@@ -31,10 +31,6 @@ export default function Footer() {
             <p className="text-sm text-slate-400 leading-relaxed max-w-sm">
               La bourse solidaire des producteurs au Sénégal. Échangez directement récoltes, semences, bétail et matériel agricole sans intermédiaire financier.
             </p>
-
-            <p className="text-xs text-slate-500">
-              Plateforme conçue et développée par <span className="text-slate-300 font-semibold">AJIT SÉNÉGAL</span>.
-            </p>
           </div>
 
           {/* Col 1: Plateforme (2 cols) */}
