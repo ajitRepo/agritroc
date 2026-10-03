@@ -120,8 +120,7 @@ export default function MessagesPage() {
   }
 
   const otherUser = activeConv?.other_user || activeConv?.otherUser
-  const cleanPhone = (otherUser?.phone || '').replace(/[^0-9]/g, '')
-  const whatsappUrl = `https://wa.me/${cleanPhone}`
+
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -245,18 +244,6 @@ export default function MessagesPage() {
                   </div>
                 </div>
 
-                {/* Direct WhatsApp Callout */}
-                {otherUser?.phone && (
-                  <a
-                    href={whatsappUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-xs transition"
-                  >
-                    <Phone className="w-3.5 h-3.5" />
-                    <span>WhatsApp direct</span>
-                  </a>
-                )}
               </div>
 
               {/* Message Feed */}

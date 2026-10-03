@@ -161,10 +161,6 @@ export default function OfferDetailPage() {
   }
   const compType = COMPLEMENT_TYPES.find((c) => c.value === offer.complement_type)
 
-  const cleanPhone = (offer.user?.phone || '').replace(/[^0-9]/g, '')
-  const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(
-    `Salam, je vous contacte concernant votre offre sur AgriTroc : "${offer.title}"`
-  )}`
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
@@ -350,18 +346,6 @@ export default function OfferDetailPage() {
             )}
 
             <div className="space-y-3 pt-2">
-              {/* Direct WhatsApp button */}
-              {offer.user?.phone && (
-                <a
-                  href={whatsappUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl text-sm shadow transition flex items-center justify-center gap-2"
-                >
-                  <MessageSquare className="w-4 h-4" />
-                  <span>Contacter sur WhatsApp</span>
-                </a>
-              )}
 
               {offer.user?.id && (
                 <Link

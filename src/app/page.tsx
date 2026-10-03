@@ -283,9 +283,9 @@ export default function HomePage() {
               <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-800 font-black text-xl flex items-center justify-center mx-auto">
                 2
               </div>
-              <h3 className="text-lg font-bold text-slate-900">Échangez via WhatsApp</h3>
+              <h3 className="text-lg font-bold text-slate-900">Discutez sur AgriTroc</h3>
               <p className="text-sm text-slate-600 leading-relaxed">
-                Discutez des modalités de transport, des quantités ou des compléments directement par messagerie ou WhatsApp.
+                Échangez en direct grâce à la messagerie intégrée pour convenir des modalités, quantités et compléments en toute sécurité.
               </p>
             </div>
 

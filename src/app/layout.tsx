@@ -9,14 +9,14 @@ import LoginModal from '@/components/LoginModal'
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://agritroc.com'),
   title: 'AgriTroc — Plateforme de Troc & Entraide Agricole au Sénégal',
-  description: 'Échangez vos ressources agricoles (semences, terres, bétail, machines, récoltes) en direct au Sénégal par troc simple ou avec complément via WhatsApp.',
+  description: 'Échangez vos ressources agricoles (semences, terres, bétail, machines, récoltes) en direct au Sénégal par troc simple ou avec complément sur AgriTroc.',
   icons: {
     icon: '/icon.png',
     apple: '/apple-icon.png',
   },
   openGraph: {
     title: 'AgriTroc — Plateforme de Troc & Entraide Agricole au Sénégal',
-    description: 'Échangez vos ressources agricoles en direct au Sénégal par troc simple ou avec complément via WhatsApp.',
+    description: 'Échangez vos ressources agricoles en direct au Sénégal par troc simple ou avec complément sur AgriTroc.',
     type: 'website',
     locale: 'fr_SN',
     siteName: 'AgriTroc',

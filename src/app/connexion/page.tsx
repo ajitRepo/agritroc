@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/context/AuthContext'
 import { useToast } from '@/components/Toast'
 import Image from 'next/image'
-import { Phone, KeyRound, ArrowLeft, RefreshCw, MessageSquare, Check, User as UserIcon, Shield } from 'lucide-react'
+import { Phone, KeyRound, ArrowLeft, RefreshCw, MessageSquare, Check, User as UserIcon, Shield, Upload, Camera } from 'lucide-react'
+import { AVATAR_PRESETS } from '@/lib/avatars'
 
 const OTP_LENGTH = 6
 const RESEND_COOLDOWN = 60
@@ -19,10 +20,45 @@ export default function ConnexionPage() {
   const [phone, setPhone] = useState('')
   const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(''))
   const [fullName, setFullName] = useState('')
+  const [avatarUrl, setAvatarUrl] = useState('')
+  const [uploadingAvatar, setUploadingAvatar] = useState(false)
   const [loading, setLoading] = useState(false)
   const [resendTimer, setResendTimer] = useState(0)
 
   const otpRefs = useRef<(HTMLInputElement | null)[]>([])
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setUploadingAvatar(true)
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      formData.append('kind', 'avatar')
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('agri_token') || ''}`,
+        },
+        body: formData,
+      })
+      const data = await res.json()
+      if (res.ok && data.url) {
+        setAvatarUrl(data.url)
+        showToast('Photo importée !')
+      } else {
+        showToast(data.error || 'Erreur lors du téléversement', 'error')
+      }
+    } catch {
+      showToast('Erreur de connexion lors du téléversement', 'error')
+    } finally {
+      setUploadingAvatar(false)
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
+  }
 
   // If already authenticated, redirect
   useEffect(() => {
@@ -177,7 +213,11 @@ export default function ConnexionPage() {
 
     setLoading(true)
     try {
-      await updateProfile({ fullName: nom, full_name: nom })
+      await updateProfile({
+        fullName: nom,
+        full_name: nom,
+        ...(avatarUrl ? { avatarUrl, avatar_url: avatarUrl } : {}),
+      })
       showToast(`Bienvenue ${nom} !`)
       router.push('/offres')
     } catch {
@@ -327,19 +367,76 @@ export default function ConnexionPage() {
           </form>
         )}
 
-        {/* STEP 3: NAME ONBOARDING */}
+        {/* STEP 3: NAME & AVATAR ONBOARDING */}
         {step === 'nom' && (
-          <form onSubmit={handleSaveName} className="space-y-6">
+          <form onSubmit={handleSaveName} className="space-y-5">
             <div className="space-y-2">
-              <div className="w-16 h-16 bg-emerald-100 text-emerald-800 rounded-2xl flex items-center justify-center mx-auto shadow-sm">
-                <UserIcon className="w-8 h-8" />
+              {/* Optional Avatar Picker */}
+              <div className="relative mx-auto w-20 h-20">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp,image/gif"
+                  onChange={handleAvatarUpload}
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploadingAvatar}
+                  className="w-20 h-20 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-black text-2xl overflow-hidden border-2 border-emerald-300 shadow-sm relative group hover:border-emerald-500 transition"
+                  title="Ajouter une photo de profil (optionnel)"
+                >
+                  {avatarUrl ? (
+                    <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                  ) : (
+                    <UserIcon className="w-9 h-9 text-emerald-700" />
+                  )}
+                  <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center transition">
+                    <Camera className="w-5 h-5 text-white" />
+                  </div>
+                  {uploadingAvatar && (
+                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                      <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    </div>
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="absolute -bottom-1 -right-1 w-7 h-7 bg-emerald-700 hover:bg-emerald-800 text-white rounded-full flex items-center justify-center shadow-md transition"
+                >
+                  <Camera className="w-3.5 h-3.5" />
+                </button>
               </div>
-              <h1 className="text-2xl font-black text-slate-900">
+
+              <h1 className="text-xl sm:text-2xl font-black text-slate-900">
                 Sous quel nom vous connaît-on ?
               </h1>
-              <p className="text-xs sm:text-sm text-slate-500 max-w-sm mx-auto leading-relaxed">
-                Ce nom apparaîtra sur vos offres de troc agricole et discussions. Votre prénom ou le nom de votre exploitation.
+              <p className="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
+                Votre prénom ou exploitation. Vous pouvez aussi choisir une photo ou un avatar ci-dessous (optionnel).
               </p>
+
+              {/* Quick preset avatars */}
+              <div className="pt-2">
+                <div className="flex items-center justify-center gap-1.5 overflow-x-auto py-1">
+                  {AVATAR_PRESETS.slice(0, 6).map((preset) => (
+                    <button
+                      key={preset.id}
+                      type="button"
+                      onClick={() => setAvatarUrl(preset.url)}
+                      className={`p-1 rounded-xl border-2 transition ${
+                        avatarUrl === preset.url
+                          ? 'border-emerald-600 bg-emerald-50 scale-105'
+                          : 'border-transparent hover:border-slate-200'
+                      }`}
+                      title={preset.label}
+                    >
+                      <img src={preset.url} alt={preset.label} className="w-8 h-8 rounded-full object-cover" />
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
 
             <div>
@@ -351,7 +448,7 @@ export default function ConnexionPage() {
                 placeholder="ex: Amadou Diallo ou GIE Terroir Bio"
                 maxLength={60}
                 autoFocus
-                className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-3.5 px-4 text-slate-900 text-center text-base font-bold outline-none focus:border-emerald-600 focus:bg-white transition"
+                className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-3 px-4 text-slate-900 text-center text-sm font-bold outline-none focus:border-emerald-600 focus:bg-white transition"
               />
             </div>
 
