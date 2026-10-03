@@ -7,7 +7,6 @@ import { useAuth } from '@/context/AuthContext'
 import Image from 'next/image'
 import {
   Plus,
-  MessageSquare,
   User as UserIcon,
   LogOut,
   Menu,
@@ -73,30 +72,16 @@ export default function Navbar() {
             </Link>
 
             {isAuthenticated && (
-              <>
-                <Link
-                  href="/mes-offres"
-                  className={`text-sm font-semibold transition-colors ${
-                    isActive('/mes-offres')
-                      ? 'text-emerald-800 border-b-2 border-emerald-700 pb-0.5'
-                      : 'text-slate-600 hover:text-emerald-800'
-                  }`}
-                >
-                  Mes annonces
-                </Link>
-
-                <Link
-                  href="/messages"
-                  className={`text-sm font-semibold transition-colors flex items-center gap-1.5 ${
-                    isActive('/messages')
-                      ? 'text-emerald-800 border-b-2 border-emerald-700 pb-0.5'
-                      : 'text-slate-600 hover:text-emerald-800'
-                  }`}
-                >
-                  <MessageSquare className="w-4 h-4 text-emerald-700" />
-                  <span>Messagerie</span>
-                </Link>
-              </>
+              <Link
+                href="/mes-offres"
+                className={`text-sm font-semibold transition-colors ${
+                  isActive('/mes-offres')
+                    ? 'text-emerald-800 border-b-2 border-emerald-700 pb-0.5'
+                    : 'text-slate-600 hover:text-emerald-800'
+                }`}
+              >
+                Mes annonces
+              </Link>
             )}
           </nav>
 
@@ -160,15 +145,6 @@ export default function Navbar() {
                       >
                         <Layers className="w-4 h-4 text-emerald-700" />
                         <span>Mes annonces</span>
-                      </Link>
-
-                      <Link
-                        href="/messages"
-                        onClick={() => setProfileDropdownOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-slate-700 hover:text-emerald-800 hover:bg-emerald-50 rounded-lg transition-colors"
-                      >
-                        <MessageSquare className="w-4 h-4 text-emerald-700" />
-                        <span>Messagerie</span>
                       </Link>
                     </div>
 
@@ -238,13 +214,6 @@ export default function Navbar() {
                 className="block px-3 py-2.5 rounded-lg text-base font-semibold text-slate-800 hover:bg-slate-50 transition-colors"
               >
                 Mes annonces
-              </Link>
-              <Link
-                href="/messages"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2.5 rounded-lg text-base font-semibold text-slate-800 hover:bg-slate-50 transition-colors"
-              >
-                Messagerie
               </Link>
               <Link
                 href="/profil"

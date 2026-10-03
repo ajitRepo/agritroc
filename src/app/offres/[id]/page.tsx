@@ -22,7 +22,7 @@ import {
   ExternalLink,
   Sparkles,
   ArrowLeftRight,
-  Send,
+  MessageCircle,
 } from 'lucide-react'
 import { RESOURCE_TYPES, COMPLEMENT_TYPES } from '@/lib/constants'
 
@@ -35,11 +35,17 @@ const CATEGORY_ICONS: Record<string, string> = {
   other: '/avatars/avatar-peanut.webp',
 }
 
-const QUICK_MESSAGES = [
-  'Salam, votre offre est-elle toujours disponible ?',
-  'J\'ai exactement ce que vous recherchez !',
-  'Pouvons-nous discuter des modalités de transport ?',
-]
+function getWhatsAppUrl(phone?: string, title?: string) {
+  if (!phone) return '#'
+  let clean = phone.replace(/[^0-9]/g, '')
+  if (clean.startsWith('00221')) {
+    clean = clean.substring(2)
+  } else if (!clean.startsWith('221') && clean.length === 9) {
+    clean = '221' + clean
+  }
+  const text = `Salam Alaykoum, je vous contacte depuis AgriTroc concernant votre annonce de troc : "${title || ''}". Je souhaite échanger avec vous.`
+  return `https://wa.me/${clean}?text=${encodeURIComponent(text)}`
+}
 
 export default function OfferDetailPage() {
   const params = useParams()
@@ -49,9 +55,6 @@ export default function OfferDetailPage() {
   const [offer, setOffer] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [activeImageIdx, setActiveImageIdx] = useState(0)
-  const [contactMsg, setContactMsg] = useState('')
-  const [sendingMsg, setSendingMsg] = useState(false)
-  const [contactSuccess, setContactSuccess] = useState<string | null>(null)
   const [actionLoading, setActionLoading] = useState(false)
 
   const offerId = params.id as string
@@ -74,40 +77,6 @@ export default function OfferDetailPage() {
   }, [offerId])
 
   const isOwner = user && offer && offer.user && user.id === offer.user.id
-
-  const handleStartConversation = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!isAuthenticated) {
-      router.push('/connexion')
-      return
-    }
-
-    setSendingMsg(true)
-    try {
-      const res = await fetch('/api/messages/conversations', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('agri_token') || ''}`,
-        },
-        body: JSON.stringify({
-          offer_id: offerId,
-          message: contactMsg || 'Salam, je suis intéressé par votre proposition de troc.',
-        }),
-      })
-
-      if (res.ok) {
-        setContactSuccess('Votre message a été envoyé ! Redirection...')
-        setTimeout(() => {
-          router.push('/messages')
-        }, 1200)
-      }
-    } catch (err) {
-      console.error('Erreur envoi message:', err)
-    } finally {
-      setSendingMsg(false)
-    }
-  }
 
   const handleCompleteOffer = async () => {
     if (!confirm('Confirmez-vous que ce troc a été conclu avec succès ?')) return
@@ -390,58 +359,40 @@ export default function OfferDetailPage() {
             </div>
           </div>
 
-          {/* Contact / In-App Message Form (if not owner) */}
+          {/* Direct WhatsApp Contact (if not owner) */}
           {!isOwner && offer.status === 'active' && (
-            <div className="bg-white p-6 rounded-3xl border border-emerald-200/90 shadow-[0_4px_25px_rgba(5,96,58,0.06)] space-y-4">
-              <div className="flex items-center gap-2">
-                <MessageSquare className="w-5 h-5 text-emerald-700" />
+            <div className="bg-white p-6 rounded-3xl border-2 border-emerald-500/30 shadow-[0_4px_25px_rgba(5,96,58,0.06)] space-y-4">
+              <div className="flex items-center gap-2 text-emerald-800">
+                <MessageCircle className="w-5 h-5 text-emerald-600" />
                 <h3 className="text-base font-bold text-slate-900">
-                  Discuter avec l'exploitant
+                  Contacter l'exploitant
                 </h3>
               </div>
 
-              {contactSuccess ? (
-                <div className="p-4 rounded-2xl bg-emerald-50 text-emerald-800 text-xs font-semibold flex items-center gap-2 animate-in fade-in">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-                  <span>{contactSuccess}</span>
-                </div>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Discutez directement sur WhatsApp pour convenir des quantités, du lieu d'échange et des modalités du troc.
+              </p>
+
+              {offer.user?.phone ? (
+                <a
+                  href={getWhatsAppUrl(offer.user.phone, offer.title)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full py-4 bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold rounded-2xl text-sm shadow-[0_4px_16px_rgba(37,211,102,0.35)] transition flex items-center justify-center gap-2.5 cursor-pointer"
+                >
+                  <MessageCircle className="w-5 h-5 fill-white text-[#25D366]" />
+                  <span>Contacter sur WhatsApp</span>
+                </a>
               ) : (
-                <form onSubmit={handleStartConversation} className="space-y-3">
-                  <textarea
-                    rows={3}
-                    placeholder="Écrivez votre message (ex: Salam, je suis intéressé, j'ai les semences disponibles...)"
-                    value={contactMsg}
-                    onChange={(e) => setContactMsg(e.target.value)}
-                    className="w-full p-3.5 bg-slate-50 border border-slate-200/80 rounded-2xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white resize-none transition"
-                  ></textarea>
-
-                  {/* Suggested quick chips */}
-                  <div className="space-y-1.5">
-                    <p className="text-[11px] text-slate-400 font-medium">Suggestions :</p>
-                    <div className="flex flex-col gap-1.5">
-                      {QUICK_MESSAGES.map((msg, i) => (
-                        <button
-                          key={i}
-                          type="button"
-                          onClick={() => setContactMsg(msg)}
-                          className="text-left text-[11px] text-emerald-800 bg-emerald-50/70 hover:bg-emerald-100/70 px-2.5 py-1.5 rounded-xl border border-emerald-200/50 transition"
-                        >
-                          {msg}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={sendingMsg}
-                    className="w-full py-3.5 bg-gradient-to-r from-emerald-700 to-emerald-800 hover:from-emerald-800 hover:to-emerald-900 disabled:opacity-60 text-white font-bold rounded-2xl text-sm shadow-[0_4px_14px_rgba(5,96,58,0.25)] transition flex items-center justify-center gap-2"
-                  >
-                    <Send className="w-4 h-4" />
-                    <span>{sendingMsg ? 'Envoi...' : 'Envoyer mon message'}</span>
-                  </button>
-                </form>
+                <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs text-slate-500 text-center">
+                  Numéro de contact non disponible
+                </div>
               )}
+
+              <div className="text-[11px] text-slate-400 text-center flex items-center justify-center gap-1.5 pt-1">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Contact direct sans intermédiaire</span>
+              </div>
             </div>
           )}
 

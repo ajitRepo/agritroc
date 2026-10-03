@@ -50,11 +50,6 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/messages" className="hover:text-emerald-400 transition-colors">
-                  Messagerie
-                </Link>
-              </li>
-              <li>
                 <Link href="/profil" className="hover:text-emerald-400 transition-colors">
                   Mon espace
                 </Link>

@@ -63,7 +63,7 @@ export default function ConditionsPage() {
             <li>Décrire honnêtement la nature, la qualité et la quantité de la ressource proposée.</li>
             <li>Ne proposer que des biens et semences licites, conformes aux réglementations agricoles sénégalaises.</li>
             <li>Respecter la parole donnée lors des échanges avec les autres membres de la communauté.</li>
-            <li>Adopter un comportement courtois et solidaire dans la messagerie AgriTroc.</li>
+            <li>Adopter un comportement courtois, fraternel et solidaire lors des échanges sur WhatsApp.</li>
           </ul>
         </section>
 

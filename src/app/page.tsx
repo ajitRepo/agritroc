@@ -398,9 +398,9 @@ export default function HomePage() {
               <div className="w-14 h-14 rounded-2xl bg-amber-50 text-amber-800 font-black text-xl flex items-center justify-center border border-amber-200/60 shadow-xs">
                 02
               </div>
-              <h3 className="text-xl font-bold text-slate-900">Négociez sur AgriTroc</h3>
+              <h3 className="text-xl font-bold text-slate-900">Échangez sur WhatsApp</h3>
               <p className="text-sm text-slate-600 leading-relaxed">
-                Utilisez la messagerie interne intégrée pour négocier en direct les volumes, équivalences et compléments en toute sécurité.
+                Cliquez sur le bouton WhatsApp pour contacter directement l'agriculteur, échanger des photos et convenir des détails du troc en toute simplicité.
               </p>
             </div>
 

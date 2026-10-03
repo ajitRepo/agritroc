@@ -71,7 +71,7 @@ export default function ConfidentialitePage() {
               <strong>Photos de vos annonces et avatar :</strong> Les photos que vous choisissez de téléverser pour illustrer vos semences, animaux, machines ou récoltes.
             </li>
             <li>
-              <strong>Messages internes sur AgriTroc :</strong> Les messages que vous échangez dans la messagerie intégrée pour organiser vos trocs.
+              <strong>Contact direct par WhatsApp :</strong> Les discussions et accords de troc s'effectuent directement sur WhatsApp entre producteurs. AgriTroc ne conserve aucun journal de vos conversations privées.
             </li>
           </ul>
         </section>
