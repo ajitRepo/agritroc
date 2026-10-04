@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getUserFromRequest } from '@/lib/auth'
 import { z } from 'zod'
+import { quantityFields, readQuantities } from '@/lib/offer-quantities'
 
 const createOfferSchema = z.object({
   title: z.string().min(3, 'Le titre doit contenir au moins 3 caractères'),
@@ -15,6 +16,7 @@ const createOfferSchema = z.object({
   latitude: z.number().optional().nullable(),
   longitude: z.number().optional().nullable(),
   images: z.array(z.string()).optional(),
+  ...quantityFields,
 })
 
 export function serializeOffer(offer: any) {
@@ -28,6 +30,10 @@ export function serializeOffer(offer: any) {
     offeredResource: offer.offeredResource,
     wanted_resource: offer.wantedResource,
     wantedResource: offer.wantedResource,
+    offered_quantity: offer.offeredQuantity ?? null,
+    offered_unit: offer.offeredUnit ?? null,
+    wanted_quantity: offer.wantedQuantity ?? null,
+    wanted_unit: offer.wantedUnit ?? null,
     complement_type: offer.complementType,
     complementType: offer.complementType,
     complement_desc: offer.complementDesc,
@@ -143,6 +149,7 @@ export async function POST(req: NextRequest) {
       latitude: body.latitude,
       longitude: body.longitude,
       images: body.images,
+      ...readQuantities(body),
     })
 
     const offer = await prisma.offer.create({
@@ -158,6 +165,11 @@ export async function POST(req: NextRequest) {
         location: parsed.location,
         latitude: parsed.latitude,
         longitude: parsed.longitude,
+        // Une quantité sans unité (ou l'inverse) n'a pas de sens : on garde la paire ou rien
+        offeredQuantity: parsed.offered_unit ? parsed.offered_quantity ?? null : null,
+        offeredUnit: parsed.offered_quantity ? parsed.offered_unit ?? null : null,
+        wantedQuantity: parsed.wanted_unit ? parsed.wanted_quantity ?? null : null,
+        wantedUnit: parsed.wanted_quantity ? parsed.wanted_unit ?? null : null,
         status: 'active',
         images: parsed.images && parsed.images.length > 0
           ? {

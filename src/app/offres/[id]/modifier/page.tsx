@@ -6,6 +6,7 @@ import { useAuth } from '@/context/AuthContext'
 import { ArrowRight, AlertCircle, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { RESOURCE_TYPES, COMPLEMENT_TYPES, SENEGAL_REGIONS } from '@/lib/constants'
+import QuantityInput, { parseQuantity, quantityError } from '@/components/QuantityInput'
 
 export default function ModifierOffrePage() {
   const params = useParams()
@@ -18,6 +19,10 @@ export default function ModifierOffrePage() {
   const [resourceType, setResourceType] = useState('seeds')
   const [offeredResource, setOfferedResource] = useState('')
   const [wantedResource, setWantedResource] = useState('')
+  const [offeredQty, setOfferedQty] = useState('')
+  const [offeredUnit, setOfferedUnit] = useState('')
+  const [wantedQty, setWantedQty] = useState('')
+  const [wantedUnit, setWantedUnit] = useState('')
   const [complementType, setComplementType] = useState('none')
   const [complementDesc, setComplementDesc] = useState('')
   const [location, setLocation] = useState('Kaolack')
@@ -39,6 +44,10 @@ export default function ModifierOffrePage() {
           setResourceType(data.resource_type || 'seeds')
           setOfferedResource(data.offered_resource || '')
           setWantedResource(data.wanted_resource || '')
+          setOfferedQty(data.offered_quantity ? String(data.offered_quantity).replace('.', ',') : '')
+          setOfferedUnit(data.offered_unit || '')
+          setWantedQty(data.wanted_quantity ? String(data.wanted_quantity).replace('.', ',') : '')
+          setWantedUnit(data.wanted_unit || '')
           setComplementType(data.complement_type || 'none')
           setComplementDesc(data.complement_desc || '')
           setLocation(data.location || 'Kaolack')
@@ -59,6 +68,11 @@ export default function ModifierOffrePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    const qtyProblem = quantityError(offeredQty, offeredUnit) || quantityError(wantedQty, wantedUnit)
+    if (qtyProblem) {
+      setError(qtyProblem)
+      return
+    }
     setError(null)
     setLoading(true)
 
@@ -74,6 +88,10 @@ export default function ModifierOffrePage() {
           resource_type: resourceType,
           offered_resource: offeredResource,
           wanted_resource: wantedResource,
+          offered_quantity: parseQuantity(offeredQty),
+          offered_unit: offeredUnit || null,
+          wanted_quantity: parseQuantity(wantedQty),
+          wanted_unit: wantedUnit || null,
           complement_type: complementType,
           complement_desc: complementDesc || null,
           location,
@@ -155,6 +173,9 @@ export default function ModifierOffrePage() {
               onChange={(e) => setOfferedResource(e.target.value)}
               className="w-full h-12 px-4 bg-surface border border-line rounded-button text-base text-ink focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             />
+            <div className="mt-2">
+              <QuantityInput id="offered" quantity={offeredQty} unit={offeredUnit} onQuantity={setOfferedQty} onUnit={setOfferedUnit} />
+            </div>
           </div>
 
           <div>
@@ -168,6 +189,9 @@ export default function ModifierOffrePage() {
               onChange={(e) => setWantedResource(e.target.value)}
               className="w-full h-12 px-4 bg-surface border border-line rounded-button text-base text-ink focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             />
+            <div className="mt-2">
+              <QuantityInput id="wanted" quantity={wantedQty} unit={wantedUnit} onQuantity={setWantedQty} onUnit={setWantedUnit} />
+            </div>
           </div>
         </div>
 

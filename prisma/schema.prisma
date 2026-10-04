@@ -55,6 +55,11 @@ model Offer {
   resourceType    String   @map("resource_type") // land, livestock, seeds, machinery, production, other
   offeredResource String   @map("offered_resource")
   wantedResource  String   @map("wanted_resource")
+  // Quantités structurées (facultatives) : annonces comparables et plus rapides à lire
+  offeredQuantity Float?   @map("offered_quantity")
+  offeredUnit     String?  @map("offered_unit")
+  wantedQuantity  Float?   @map("wanted_quantity")
+  wantedUnit      String?  @map("wanted_unit")
   complementType  String   @default("none") @map("complement_type") // none, money, other
   complementDesc  String?  @map("complement_desc")
   location        String

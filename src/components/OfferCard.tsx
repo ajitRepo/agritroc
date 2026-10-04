@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { MapPin, ArrowLeftRight } from 'lucide-react'
-import { categoryIcon, categoryLabel, timeAgo } from '@/lib/constants'
+import { categoryIcon, categoryLabel, timeAgo, formatQuantity } from '@/lib/constants'
 import type { Offer } from '@/lib/types'
 
 /**
@@ -33,11 +33,11 @@ export default function OfferCard({ offer }: { offer: Offer }) {
           </div>
         )}
 
-        <span className="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full bg-white/95 text-[11px] font-semibold text-ink shadow-sm">
+        <span className="absolute top-2.5 left-2.5 max-w-[calc(100%-1.25rem)] truncate px-2.5 py-1 rounded-full bg-white/95 text-[11px] font-semibold text-ink shadow-sm">
           {label}
         </span>
         {offer.complement_type && offer.complement_type !== 'none' && (
-          <span className="absolute top-2.5 right-2.5 px-2 py-1 rounded-full bg-ochre text-white text-[11px] font-semibold shadow-sm">
+          <span className="absolute bottom-2.5 right-2.5 px-2 py-1 rounded-full bg-ochre text-white text-[11px] font-semibold shadow-sm">
             + Complément
           </span>
         )}
@@ -53,6 +53,9 @@ export default function OfferCard({ offer }: { offer: Offer }) {
             <ArrowLeftRight className="w-4 h-4 mt-0.5 text-ochre shrink-0" aria-hidden />
             <span className="line-clamp-1">
               <span className="sr-only">Recherche en échange : </span>
+              {formatQuantity(offer.wanted_quantity, offer.wanted_unit) && (
+                <span className="font-semibold text-ink">{formatQuantity(offer.wanted_quantity, offer.wanted_unit)} · </span>
+              )}
               {offer.wanted_resource}
             </span>
           </p>
@@ -61,7 +64,7 @@ export default function OfferCard({ offer }: { offer: Offer }) {
         <div className="mt-auto pt-1 flex items-center justify-between gap-2 text-xs text-ink-subtle">
           <span className="flex items-center gap-1 min-w-0">
             <MapPin className="w-3.5 h-3.5 text-primary shrink-0" aria-hidden />
-            <span className="truncate font-medium text-ink-muted">{offer.location}</span>
+            <span className="truncate font-medium text-ink-muted text-[13px]">{offer.location}</span>
           </span>
           <span className="hidden sm:inline shrink-0">{timeAgo(offer.created_at)}</span>
         </div>

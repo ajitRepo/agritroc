@@ -21,8 +21,9 @@ import {
   CheckCircle2,
   Plus,
   AlertCircle,
+  ShieldCheck,
 } from 'lucide-react'
-import { COMPLEMENT_TYPES, categoryIcon, categoryLabel, whatsAppUrl } from '@/lib/constants'
+import { COMPLEMENT_TYPES, categoryIcon, categoryLabel, whatsAppUrl, formatQuantity } from '@/lib/constants'
 import type { Offer } from '@/lib/types'
 
 type LoadState = 'loading' | 'ready' | 'not-found' | 'error'
@@ -325,10 +326,20 @@ function OfferDetail() {
             <div className="p-4 sm:p-5 border-b border-line">
               <p className="text-xs font-semibold uppercase tracking-wide text-primary">Propose</p>
               <p className="mt-1 text-lg font-semibold text-ink">{offer.offered_resource}</p>
+              {formatQuantity(offer.offered_quantity, offer.offered_unit) && (
+                <p className="mt-1.5 inline-block px-2.5 py-1 rounded-control bg-primary-soft text-primary font-bold">
+                  {formatQuantity(offer.offered_quantity, offer.offered_unit)}
+                </p>
+              )}
             </div>
             <div className="p-4 sm:p-5">
               <p className="text-xs font-semibold uppercase tracking-wide text-ochre">En échange de</p>
               <p className="mt-1 text-lg font-semibold text-ink">{offer.wanted_resource}</p>
+              {formatQuantity(offer.wanted_quantity, offer.wanted_unit) && (
+                <p className="mt-1.5 inline-block px-2.5 py-1 rounded-control bg-ochre-soft text-warning font-bold">
+                  {formatQuantity(offer.wanted_quantity, offer.wanted_unit)}
+                </p>
+              )}
             </div>
             {offer.complement_type !== 'none' && (
               <div className="px-4 sm:px-5 py-3 bg-ochre-soft text-sm">
@@ -362,11 +373,18 @@ function OfferDetail() {
               <ChevronRight className="w-5 h-5 text-ink-subtle shrink-0" aria-hidden />
             </Link>
 
+            {/* Chaque compte se connecte par un code envoyé sur WhatsApp : le numéro est réel */}
+            <p className="flex items-center gap-1.5 text-sm text-ink-muted">
+              <ShieldCheck className="w-4 h-4 text-primary shrink-0" aria-hidden />
+              Numéro vérifié par WhatsApp
+              {!!offer.user?.exchange_count && <span>· {offer.user.exchange_count} trocs conclus</span>}
+            </p>
+
             {(offer.user?.rating_avg ?? 0) > 0 && (
               <p className="flex items-center gap-1.5 text-sm text-ink-muted">
                 <Star className="w-4 h-4 fill-ochre text-ochre" aria-hidden />
                 <span className="font-semibold text-ink">{offer.user!.rating_avg!.toFixed(1)}/5</span>
-                <span>· {offer.user?.exchange_count || 0} trocs réussis</span>
+                <span>note moyenne</span>
               </p>
             )}
 

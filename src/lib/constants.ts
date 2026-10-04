@@ -97,3 +97,40 @@ export function whatsAppUrl(phone?: string, title?: string): string {
   const text = `Salam Alaykoum, je vous contacte depuis AgriTroc concernant votre annonce de troc : "${title || ''}". Je souhaite échanger avec vous.`
   return `https://wa.me/${clean}?text=${encodeURIComponent(text)}`
 }
+
+// === QUANTITÉS ===
+// Unités courantes au Sénégal ; la valeur est stockée en base (offered_unit / wanted_unit)
+export const UNITS = [
+  { value: 'kg', singular: 'kg', plural: 'kg' },
+  { value: 'sac', singular: 'sac', plural: 'sacs' },
+  { value: 'tonne', singular: 'tonne', plural: 'tonnes' },
+  { value: 'tete', singular: 'tête', plural: 'têtes' },
+  { value: 'hectare', singular: 'hectare', plural: 'hectares' },
+  { value: 'botte', singular: 'botte', plural: 'bottes' },
+  { value: 'litre', singular: 'litre', plural: 'litres' },
+  { value: 'unite', singular: 'unité', plural: 'unités' },
+] as const
+
+export const UNIT_VALUES = UNITS.map((u) => u.value) as string[]
+
+/** 50 + "kg" → "50 kg", 3 + "sac" → "3 sacs", 1.5 + "tonne" → "1,5 tonne" */
+export function formatQuantity(quantity?: number | null, unit?: string | null): string {
+  if (quantity === null || quantity === undefined || !unit) return ''
+  const u = UNITS.find((x) => x.value === unit)
+  if (!u) return ''
+  const n = quantity.toLocaleString('fr-FR', { maximumFractionDigits: 2 })
+  return `${n} ${quantity >= 2 ? u.plural : u.singular}`
+}
+
+// === SAISONS (calendrier agricole indicatif du Sénégal) ===
+// Sert uniquement à proposer des recherches utiles selon le mois, jamais à filtrer.
+export function seasonalSuggestions(month = new Date().getMonth()): { title: string; searches: string[] } {
+  // Mai–juillet : préparation et semis de l'hivernage
+  if (month >= 4 && month <= 6) return { title: "Préparation de l'hivernage", searches: ['Semences', 'Arachide', 'Engrais', 'Semoir'] }
+  // Août–septembre : entretien des cultures
+  if (month >= 7 && month <= 8) return { title: 'En pleine saison des pluies', searches: ['Engrais', 'Main d’œuvre', 'Motopompe', 'Bétail'] }
+  // Octobre–décembre : récoltes
+  if (month >= 9) return { title: 'Saison des récoltes', searches: ['Arachide', 'Mil', 'Niébé', 'Batteuse'] }
+  // Janvier–avril : saison sèche, maraîchage et alimentation du bétail
+  return { title: 'Saison sèche', searches: ['Fourrage', 'Oignon', 'Motopompe', 'Tourteau'] }
+}

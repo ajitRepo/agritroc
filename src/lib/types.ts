@@ -16,6 +16,10 @@ export interface Offer {
   resource_type: string
   offered_resource: string
   wanted_resource: string
+  offered_quantity?: number | null
+  offered_unit?: string | null
+  wanted_quantity?: number | null
+  wanted_unit?: string | null
   complement_type: string
   complement_desc?: string | null
   location: string

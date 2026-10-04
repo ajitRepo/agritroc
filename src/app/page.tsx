@@ -1,15 +1,28 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useSyncExternalStore } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { ArrowRight, Search, MapPin, Plus, Check, AlertCircle } from 'lucide-react'
-import { RESOURCE_TYPES, SENEGAL_REGIONS, categoryIcon } from '@/lib/constants'
+import { RESOURCE_TYPES, SENEGAL_REGIONS, categoryIcon, seasonalSuggestions } from '@/lib/constants'
+import { useAuth } from '@/context/AuthContext'
 import type { Offer } from '@/lib/types'
 import OfferCard, { OfferGrid, OfferGridSkeleton } from '@/components/OfferCard'
 
-const QUICK_SEARCHES = ['Arachide', 'Semences de maïs', 'Tracteur', 'Bétail', 'Fourrage']
+const DEFAULT_SEARCHES = ['Arachide', 'Semences', 'Tracteur', 'Bétail', 'Fourrage']
+
+// Mois courant lu côté client uniquement : la page est pré-rendue au build,
+// elle ne doit pas figer la saison du jour de déploiement
+const noopSubscribe = () => () => {}
+function useMonth(): number | null {
+  return useSyncExternalStore(noopSubscribe, () => new Date().getMonth(), () => null)
+}
+
+function regionOf(city?: string | null): string {
+  if (!city) return ''
+  return SENEGAL_REGIONS.find((r) => city.toLowerCase().includes(r.toLowerCase())) || ''
+}
 
 const STEPS = [
   { title: 'Publiez', text: 'Ce que vous avez, et ce que vous voulez en échange.' },
@@ -24,6 +37,11 @@ export default function HomePage() {
   const [offers, setOffers] = useState<Offer[]>([])
   const [loading, setLoading] = useState(true)
   const [failed, setFailed] = useState(false)
+  const { user } = useAuth()
+  const userRegion = regionOf(user?.city)
+  const [nearby, setNearby] = useState<Offer[]>([])
+  const month = useMonth()
+  const season = month === null ? null : seasonalSuggestions(month)
 
   useEffect(() => {
     async function loadRecentOffers() {
@@ -41,6 +59,21 @@ export default function HomePage() {
     }
     loadRecentOffers()
   }, [])
+
+  // « Près de chez vous » : annonces de la région du profil
+  useEffect(() => {
+    if (!userRegion) return
+    let cancelled = false
+    fetch(`/api/offers?per_page=4&location=${encodeURIComponent(userRegion)}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!cancelled && data) setNearby(data.items || [])
+      })
+      .catch(() => undefined)
+    return () => {
+      cancelled = true
+    }
+  }, [userRegion])
 
   const goSearch = (q: string, region = selectedRegion) => {
     const params = new URLSearchParams()
@@ -109,8 +142,9 @@ export default function HomePage() {
             </div>
           </form>
 
-          <div className="mt-3 flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap">
-            {QUICK_SEARCHES.map((q) => (
+          <div className="mt-3 flex items-center gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap">
+            {season && <span className="shrink-0 text-sm font-semibold text-ochre">{season.title} :</span>}
+            {(season?.searches || DEFAULT_SEARCHES).map((q) => (
               <button
                 key={q}
                 type="button"
@@ -156,6 +190,29 @@ export default function HomePage() {
             ))}
           </div>
         </section>
+
+        {/* Près de chez vous */}
+        {userRegion && nearby.length > 0 && (
+          <section aria-labelledby="nearby-title">
+            <div className="flex items-end justify-between gap-4 mb-4">
+              <h2 id="nearby-title" className="text-lg sm:text-2xl font-bold text-ink">
+                Près de chez vous · {userRegion}
+              </h2>
+              <Link
+                href={`/offres?location=${encodeURIComponent(userRegion)}`}
+                className="inline-flex items-center gap-1 h-10 text-sm font-semibold text-primary hover:text-primary-dark"
+              >
+                Voir tout
+                <ArrowRight className="w-4 h-4" aria-hidden />
+              </Link>
+            </div>
+            <OfferGrid>
+              {nearby.map((offer) => (
+                <OfferCard key={offer.id} offer={offer} />
+              ))}
+            </OfferGrid>
+          </section>
+        )}
 
         {/* Dernières annonces */}
         <section aria-labelledby="latest-title">

@@ -16,9 +16,11 @@ import {
   megabytes,
   photoRejectionReason,
   categoryIcon,
+  formatQuantity,
 } from '@/lib/constants'
+import QuantityInput, { parseQuantity, quantityError } from '@/components/QuantityInput'
 
-type Field = 'offered' | 'wanted' | 'region' | 'title'
+type Field = 'offered' | 'wanted' | 'offeredQty' | 'wantedQty' | 'region' | 'title'
 
 const inputClass = (hasError?: boolean) =>
   `w-full h-12 px-4 bg-surface border rounded-button text-base text-ink placeholder:text-ink-subtle focus:outline-none focus:ring-2 transition ${
@@ -42,6 +44,10 @@ export default function PublierPage() {
   const [resourceType, setResourceType] = useState('seeds')
   const [offeredResource, setOfferedResource] = useState('')
   const [wantedResource, setWantedResource] = useState('')
+  const [offeredQty, setOfferedQty] = useState('')
+  const [offeredUnit, setOfferedUnit] = useState('')
+  const [wantedQty, setWantedQty] = useState('')
+  const [wantedUnit, setWantedUnit] = useState('')
   const [region, setRegion] = useState('')
   const [place, setPlace] = useState('')
   const [title, setTitle] = useState('')
@@ -76,15 +82,23 @@ export default function PublierPage() {
   }
 
   // Titre généré automatiquement : un champ de moins à remplir
-  const autoTitle =
-    offeredResource.trim() && wantedResource.trim()
-      ? `${offeredResource.trim()} contre ${wantedResource.trim()}`
-      : offeredResource.trim()
+  // "Maïs certifié (100 kg) contre Mil Souna (80 kg)"
+  const withQty = (text: string, qty: string, unit: string) => {
+    const q = formatQuantity(parseQuantity(qty), unit)
+    return text.trim() && q ? `${text.trim()} (${q})` : text.trim()
+  }
+  const offeredLabel = withQty(offeredResource, offeredQty, offeredUnit)
+  const wantedLabel = withQty(wantedResource, wantedQty, wantedUnit)
+  const autoTitle = offeredLabel && wantedLabel ? `${offeredLabel} contre ${wantedLabel}` : offeredLabel
   const finalTitle = title.trim() || autoTitle
 
   const errors: Partial<Record<Field, string>> = {}
   if (offeredResource.trim().length < 2) errors.offered = 'Indiquez ce que vous proposez.'
   if (wantedResource.trim().length < 2) errors.wanted = 'Indiquez ce que vous voulez en échange.'
+  const offeredQtyError = quantityError(offeredQty, offeredUnit)
+  const wantedQtyError = quantityError(wantedQty, wantedUnit)
+  if (offeredQtyError) errors.offeredQty = offeredQtyError
+  if (wantedQtyError) errors.wantedQty = wantedQtyError
   if (!region) errors.region = 'Choisissez votre région.'
   if (title.trim() && title.trim().length < 3) errors.title = 'Le titre doit faire au moins 3 caractères.'
 
@@ -169,6 +183,10 @@ export default function PublierPage() {
           resource_type: resourceType,
           offered_resource: offeredResource.trim(),
           wanted_resource: wantedResource.trim(),
+          offered_quantity: parseQuantity(offeredQty),
+          offered_unit: offeredUnit || null,
+          wanted_quantity: parseQuantity(wantedQty),
+          wanted_unit: wantedUnit || null,
           complement_type: complementType,
           complement_desc: complementType !== 'none' && complementDesc.trim() ? complementDesc.trim() : null,
           location: place.trim() ? `${region}, ${place.trim()}` : region,
@@ -245,13 +263,14 @@ export default function PublierPage() {
         {/* 2. L'échange */}
         <div className={sectionClass}>
           <div>
-            <label htmlFor="offered" className={labelClass}>
+            <label htmlFor="offered" className={`${labelClass} flex items-center gap-2`}>
+              <span className="w-2.5 h-2.5 rounded-full bg-primary" aria-hidden />
               Ce que vous proposez
             </label>
             <input
               id="offered"
               type="text"
-              placeholder="Ex. : 100 kg de maïs certifié"
+              placeholder="Ex. : Maïs certifié"
               value={offeredResource}
               onChange={(e) => setOfferedResource(e.target.value)}
               onBlur={touch('offered')}
@@ -260,15 +279,27 @@ export default function PublierPage() {
               className={inputClass(!!showError('offered'))}
             />
             <FieldError id="offered-error" message={showError('offered')} />
+            <div className="mt-2" onBlur={touch('offeredQty')}>
+              <QuantityInput
+                id="offered"
+                quantity={offeredQty}
+                unit={offeredUnit}
+                onQuantity={setOfferedQty}
+                onUnit={setOfferedUnit}
+                hasError={!!showError('offeredQty')}
+              />
+              <FieldError id="offered-qty-error" message={showError('offeredQty')} />
+            </div>
           </div>
           <div>
-            <label htmlFor="wanted" className={labelClass}>
+            <label htmlFor="wanted" className={`${labelClass} flex items-center gap-2`}>
+              <span className="w-2.5 h-2.5 rounded-full bg-ochre" aria-hidden />
               Ce que vous voulez en échange
             </label>
             <input
               id="wanted"
               type="text"
-              placeholder="Ex. : 80 kg de mil Souna"
+              placeholder="Ex. : Mil Souna"
               value={wantedResource}
               onChange={(e) => setWantedResource(e.target.value)}
               onBlur={touch('wanted')}
@@ -277,6 +308,17 @@ export default function PublierPage() {
               className={inputClass(!!showError('wanted'))}
             />
             <FieldError id="wanted-error" message={showError('wanted')} />
+            <div className="mt-2" onBlur={touch('wantedQty')}>
+              <QuantityInput
+                id="wanted"
+                quantity={wantedQty}
+                unit={wantedUnit}
+                onQuantity={setWantedQty}
+                onUnit={setWantedUnit}
+                hasError={!!showError('wantedQty')}
+              />
+              <FieldError id="wanted-qty-error" message={showError('wantedQty')} />
+            </div>
           </div>
         </div>
 

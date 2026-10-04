@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getUserFromRequest } from '@/lib/auth'
 import { serializeOffer } from '../route'
+import { quantityFields, readQuantities } from '@/lib/offer-quantities'
 import { z } from 'zod'
 
 const updateOfferSchema = z.object({
@@ -16,6 +17,7 @@ const updateOfferSchema = z.object({
   latitude: z.number().optional().nullable(),
   longitude: z.number().optional().nullable(),
   images: z.array(z.string()).optional(),
+  ...quantityFields,
 })
 
 export async function GET(
@@ -87,6 +89,7 @@ export async function PUT(
       latitude: body.latitude,
       longitude: body.longitude,
       images: body.images,
+      ...readQuantities(body),
     })
 
     const dataToUpdate: any = {}
@@ -100,17 +103,30 @@ export async function PUT(
     if (parsed.location !== undefined) dataToUpdate.location = parsed.location
     if (parsed.latitude !== undefined) dataToUpdate.latitude = parsed.latitude
     if (parsed.longitude !== undefined) dataToUpdate.longitude = parsed.longitude
+    // Quantités : envoyées par paire (quantité + unité) ; null efface
+    if (parsed.offered_quantity !== undefined || parsed.offered_unit !== undefined) {
+      const ok = parsed.offered_quantity && parsed.offered_unit
+      dataToUpdate.offeredQuantity = ok ? parsed.offered_quantity : null
+      dataToUpdate.offeredUnit = ok ? parsed.offered_unit : null
+    }
+    if (parsed.wanted_quantity !== undefined || parsed.wanted_unit !== undefined) {
+      const ok = parsed.wanted_quantity && parsed.wanted_unit
+      dataToUpdate.wantedQuantity = ok ? parsed.wanted_quantity : null
+      dataToUpdate.wantedUnit = ok ? parsed.wanted_unit : null
+    }
 
-    if (parsed.images && parsed.images.length > 0) {
-      // Re-create images
+    if (parsed.images !== undefined) {
+      // Remplace les photos ; une liste vide les retire toutes
       await prisma.offerImage.deleteMany({ where: { offerId: id } })
-      await prisma.offerImage.createMany({
-        data: parsed.images.map((url, idx) => ({
-          offerId: id,
-          imageUrl: url,
-          position: idx,
-        })),
-      })
+      if (parsed.images.length > 0) {
+        await prisma.offerImage.createMany({
+          data: parsed.images.map((url, idx) => ({
+            offerId: id,
+            imageUrl: url,
+            position: idx,
+          })),
+        })
+      }
     }
 
     const updated = await prisma.offer.update({
